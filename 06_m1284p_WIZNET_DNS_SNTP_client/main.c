@@ -58,6 +58,26 @@
 #define sw1_conf()      {DDRC &= ~(1<<DDC5); PORTC |= (1<<PORTC5);}
 #define sw1_read()     (PINC & (1<<PINC5))
 
+#ifdef IP_WORK
+uint8_t DNS_2nd[4]    = {192, 168, 0, 1};      	// Secondary DNS server IP
+//NIC metrics for WORK PC
+wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
+		.ip   = {192, 168, 0, 199},         // IP address
+		.sn   = {255, 255, 255, 0},         // Subnet mask
+		.dns =  {8,8,8,8},			  // DNS address (google dns)
+		.gw   = {192, 168, 0, 1}, // Gateway address
+		.dhcp = NETINFO_STATIC};    //Dynamic IP configuration from a DHCP sever
+#else
+uint8_t DNS_2nd[4]    = {192, 168, 1, 1};      	// Secondary DNS server IP
+//NIC metrics for another PC (second IP configuration)
+wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
+		.ip   = {192, 168, 1, 199},         // IP address
+		.sn   = {255, 255, 255, 0},         // Subnet mask
+		.dns =  {8,8,8,8},			  // DNS address (google dns)
+		.gw   = {192, 168, 1, 1}, // Gateway address
+		.dhcp = NETINFO_STATIC};    //Dynamic IP configuration from a DHCP sever
+#endif
+
 //*********Global vars
 #define TICK_PER_SEC 1000UL
 volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
@@ -222,13 +242,6 @@ uint16_t adc_read(uint8_t channel)
 unsigned char ethBuf0[ETH_MAX_BUF_SIZE];
 unsigned char ethBuf1[ETH_MAX_BUF_SIZE];
 
-wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
-		.ip   = {192, 168, 0, 199},         // IP address
-		.sn   = {255, 255, 255, 0},         // Subnet mask
-		.dns =  {8,8,8,8},			  // DNS address (google dns)
-		.gw   = {192, 168, 0, 1}, // Gateway address
-		.dhcp = NETINFO_STATIC};    //Dynamic IP configruation from a DHCP sever
-
 void cs_sel() {
 	SPI_WIZNET_ENABLE();
 }
@@ -284,11 +297,11 @@ void IO_LIBRARY_Init(void) {
 #define SOCK_DNS       6
 
 unsigned char gDATABUF_DNS[ETH_MAX_BUF_SIZE];
+//#define IP_WORK
 
 ////////////////
 // DNS client //
 ////////////////
-uint8_t DNS_2nd[4]    = {192, 168, 0, 1};      	// Secondary DNS server IP
 //uint8_t Domain_name[] = "www.google.com";    		// for Example domain name
 //uint8_t Domain_name[] = "ntp.mobatime.ru";    	// Public russian ntp server - NO works via GSM Modem (PING not respond too)
 //uint8_t Domain_name[] = "time.nist.gov";    		// Public international ntp server - NO works via GSM Modem (PING not respond too)
