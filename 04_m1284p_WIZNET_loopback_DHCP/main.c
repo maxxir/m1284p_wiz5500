@@ -213,12 +213,25 @@ uint16_t adc_read(uint8_t channel)
 #define PORT_TCPS		5000
 #define PORT_UDPS       3000
 
+//#define IP_WORK
+
+#ifdef IP_WORK
+//NIC metrics for WORK PC
+wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
+		.ip   = {192, 168, 0, 199},         // IP address
+		.sn   = {255, 255, 255, 0},         // Subnet mask
+		.dns =  {8,8,8,8},			  // DNS address (google dns)
+		.gw   = {192, 168, 0, 1}, // Gateway address
+		.dhcp = NETINFO_DHCP};    //Dynamic IP configuration from a DHCP sever
+#else
+//NIC metrics for another PC (second IP configuration)
 wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
 		.ip   = {192, 168, 1, 199},         // IP address
 		.sn   = {255, 255, 255, 0},         // Subnet mask
 		.dns =  {8,8,8,8},			  // DNS address (google dns)
 		.gw   = {192, 168, 1, 1}, // Gateway address
-		.dhcp = NETINFO_DHCP};    //Dynamic IP configruation from a DHCP sever
+		.dhcp = NETINFO_DHCP};    //Dynamic IP configuration from a DHCP sever
+#endif
 
 #define ETH_MAX_BUF_SIZE	2048
 
