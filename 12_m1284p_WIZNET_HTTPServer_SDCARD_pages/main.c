@@ -1,7 +1,7 @@
 /*
  * main.c
  *
- *  Created on: 22 нояб. 2018 г.
+ *  Created on: 22 РЅРѕСЏР±. 2018 Рі.
  *      Author: maxx
  */
 #include <avr/io.h>
@@ -145,8 +145,8 @@ void get_mcusr(void)
 
 
 //*********Program metrics
-const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
-const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
+const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Р”Р°С‚Р° РєРѕРјРїРёР»СЏС†РёРё
+const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Р’СЂРµРјСЏ РєРѕРјРїРёР»СЏС†РёРё
 const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v2.4d Static IP HTTP_server SDCARD Pages WIZNET_5500 ETHERNET 19/12/2018\r\n"; // Program name
 
 /*
@@ -213,7 +213,7 @@ ISR (TIMER0_COMPA_vect)
 	// Compare match Timer0
 	// Here every 1ms
 	_millis++; // INC millis tick
-	// Тест мигаем при в ходе в прерывание
+	// РўРµСЃС‚ РјРёРіР°РµРј РїСЂРё РІ С…РѕРґРµ РІ РїСЂРµСЂС‹РІР°РЅРёРµ
 	// 500Hz FREQ OUT
 	// LED_TGL;
 	if(++fatfs_10ms > 9 )
@@ -252,18 +252,18 @@ static int uart0_putchar(char ch,FILE *stream);
 static void uart0_rx_flash(void);
 
 static FILE uart0_stdout = FDEV_SETUP_STREAM(uart0_putchar, NULL, _FDEV_SETUP_WRITE);
-//PS. stdin не переназначаю, т.к. удобнее с ним работать через uart.h - api:
+//PS. stdin РЅРµ РїРµСЂРµРЅР°Р·РЅР°С‡Р°СЋ, С‚.Рє. СѓРґРѕР±РЅРµРµ СЃ РЅРёРј СЂР°Р±РѕС‚Р°С‚СЊ С‡РµСЂРµР· uart.h - api:
 
 /*
- * Т.е. например так
+ * Рў.Рµ. РЅР°РїСЂРёРјРµСЂ С‚Р°Рє
         c = uart1_getc();
         if (( c & UART_NO_DATA ) == 0)
         {
            uart1_putc( (unsigned char)c );
         }
- При этом чекаем что буфер приема не пуст и опрос идет неблокирующий (+ работаем через UART RX RINGBUFFER),
- а если работаем в стиле stdin->getchar() там опрос блокируется пока символ не будет принят (поллинг)
- через UART1_RX, т.е. неудобно.
+ РџСЂРё СЌС‚РѕРј С‡РµРєР°РµРј С‡С‚Рѕ Р±СѓС„РµСЂ РїСЂРёРµРјР° РЅРµ РїСѓСЃС‚ Рё РѕРїСЂРѕСЃ РёРґРµС‚ РЅРµР±Р»РѕРєРёСЂСѓСЋС‰РёР№ (+ СЂР°Р±РѕС‚Р°РµРј С‡РµСЂРµР· UART RX RINGBUFFER),
+ Р° РµСЃР»Рё СЂР°Р±РѕС‚Р°РµРј РІ СЃС‚РёР»Рµ stdin->getchar() С‚Р°Рј РѕРїСЂРѕСЃ Р±Р»РѕРєРёСЂСѓРµС‚СЃСЏ РїРѕРєР° СЃРёРјРІРѕР» РЅРµ Р±СѓРґРµС‚ РїСЂРёРЅСЏС‚ (РїРѕР»Р»РёРЅРі)
+ С‡РµСЂРµР· UART1_RX, С‚.Рµ. РЅРµСѓРґРѕР±РЅРѕ.
  */
 
 // STDOUT UART0 TX handler
@@ -273,10 +273,10 @@ static int uart0_putchar(char ch,FILE *stream)
 	return 0;
 }
 
-// Очищаем буфер приема UART1 RX (иногда нужно)
+// РћС‡РёС‰Р°РµРј Р±СѓС„РµСЂ РїСЂРёРµРјР° UART1 RX (РёРЅРѕРіРґР° РЅСѓР¶РЅРѕ)
 static void uart0_rx_flash(void)
 {
-	// Считываем все из ring-buffer UART1 RX
+	// РЎС‡РёС‚С‹РІР°РµРј РІСЃРµ РёР· ring-buffer UART1 RX
 	unsigned int c;
 	do
 	{
@@ -587,8 +587,8 @@ int main()
 
 
 	// Print program metrics
-	PRINTF("%S", str_prog_name);// Название программы
-	PRINTF("Compiled at: %S %S\r\n", compile_time, compile_date);// Время Дата компиляции
+	PRINTF("%S", str_prog_name);// РќР°Р·РІР°РЅРёРµ РїСЂРѕРіСЂР°РјРјС‹
+	PRINTF("Compiled at: %S %S\r\n", compile_time, compile_date);// Р’СЂРµРјСЏ Р”Р°С‚Р° РєРѕРјРїРёР»СЏС†РёРё
 	PRINTF(">> MCU is: %S; CLK is: %luHz\r\n", str_mcu, F_CPU);// MCU Name && FREQ
 	PRINTF(">> Free RAM is: %d bytes\r\n", freeRam());
 

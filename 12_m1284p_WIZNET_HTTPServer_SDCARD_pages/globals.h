@@ -1,7 +1,7 @@
 /*
  * globals.h
  *
- *  Created on: 29 нояб. 2018 г.
+ *  Created on: 29 РЅРѕСЏР±. 2018 Рі.
  *      Author: maxx
  */
 
