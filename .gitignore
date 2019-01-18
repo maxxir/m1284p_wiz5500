@@ -38,7 +38,7 @@ Desktop.ini
 *.lst
 *.map
 *.sym
-/Release
+Release/
 /.dep
 
 # Eclipse specific
