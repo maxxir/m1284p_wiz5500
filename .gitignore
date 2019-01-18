@@ -44,3 +44,9 @@ Release/
 # Eclipse specific
 .settings/
 
+# Wiznet not used here
+W5100/
+W5100S/
+W5200/
+W5300/
+Socket_APIs_V3.0.3.chm
