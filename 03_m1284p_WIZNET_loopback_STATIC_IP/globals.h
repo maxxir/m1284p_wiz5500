@@ -36,6 +36,8 @@ static FATFS Fatfs;		//File system object for each logical drive. >= 2
 #define PRINTF(...)
 #endif
 
+//#define IP_WORK
+
 extern unsigned long millis(void);
 extern int freeRam (void);
 
