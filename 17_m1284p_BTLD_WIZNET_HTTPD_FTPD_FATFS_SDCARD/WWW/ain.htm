@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>W5500-AtMEGA1284p Web Server Analog Input</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+  <meta http-equiv='pragma' content='no-cache'>
+  <meta http-equiv='content-type' content='no-cache, no-store, must-revalidate'>
+  <script type='text/javascript' src='ajax.js'>
+</script>
+  <script type='text/javascript' src='ain.js'>
+</script>
+  <style>.analog {
+    margin-top: 2px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    height: 20px;
+    width: 500px;
+    display: block;
+  }
+  .ain{
+    width: 0%;
+    height: 100%;
+    text-align: center;
+    background: red;
+    float: left;
+    display: block;
+  }
+  </style>
+</head>
+
+<body>
+  <div>
+    <input type='text' id='txtain_v6' size='5' disabled='disabled' value=''>
+    <input type='button' value='Get AIN6' pin='6' onclick='getAin(this);'>
+    <input type='button' value='Get AIN6 Auto' onclick='getAin6_update();'><br>
+
+    <div class='analog' style='padding:0px;'>
+      <strong id='ain_v6' name='ain' class='ain' style='width:0%;'></strong>
+    </div>
+  </div>
+</body>
+</html>

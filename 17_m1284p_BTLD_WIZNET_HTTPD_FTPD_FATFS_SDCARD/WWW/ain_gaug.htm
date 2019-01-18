@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>W5500-AtMEGA1284p Web Server Analog Input Gauge</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+  <meta http-equiv='pragma' content='no-cache'>
+  <meta http-equiv='content-type' content='no-cache, no-store, must-revalidate'>
+  <script type='text/javascript' src='ajax.js'>
+</script>
+  <script type='text/javascript' src='https://www.google.com/jsapi'>
+</script>
+  <script type='text/javascript' src='ain_gaug.js'>
+</script>
+</head>
+
+<body>
+  <div>
+    <input type='text' id='txtain_v6' size='5' disabled='disabled' value=''>
+    <input type='button' value='Get AIN' pin='6' onclick='getAin(this);'>
+    <input type='button' value='Get AIN Auto' onclick='getAin6_update();'><br>
+    <!--Draw the Google Gauge Chart-->
+
+    <div id='chart_div' style='width: 400px; height: 120px;'></div>
+  </div>
+</body>
+</html>

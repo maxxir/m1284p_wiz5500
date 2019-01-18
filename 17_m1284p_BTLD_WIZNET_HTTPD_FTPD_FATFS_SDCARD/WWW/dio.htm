@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>W5500-AtMEGA1284p Web Server Digital I/O v1.1</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+  <script type='text/javascript' src='ajax.js'>
+</script>
+  <script type='text/javascript' src='dio.js'>
+</script>
+</head>
+
+<body onload='getled1();'>
+  <!-- to do -->
+
+  <p id="led1_txt">LED1: unknown..</p>
+
+  <div>
+    <input type='button' value='LED 1 Off' pin='LED1' s='0' onclick='setDiostate(this);'>
+    <input type='button' value='LED 1 On' pin='LED1' s='1' onclick='setDiostate(this);'><br>
+  </div><!-- to do -->
+</body>
+</html>
+
