@@ -33,6 +33,8 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
 
 
 /*
+ * History:
+ *
  * (3) WIZNET loopback + FATFS  (as template)
  * + Added FATFS init (from <02_m1284p_FATFS_Chang_tst>),
  * Trying WIZNET5500 init with using official Wiznet ioLibrary_Driver
