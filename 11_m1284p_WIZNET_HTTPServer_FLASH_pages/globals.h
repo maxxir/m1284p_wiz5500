@@ -16,12 +16,14 @@
 //#define HTTPD_MAX_BUF_SIZE	2048 //For Mega1284p(16kb RAM)/Mega2560(8kb RAM)
 #define HTTPD_MAX_BUF_SIZE	512 //For Mega644p(4kb RAM)/Mega128(4kb RAM)
 
-#define PRINTF_EN 0
+#define PRINTF_EN 1
 #if PRINTF_EN
 #define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 #else
 #define PRINTF(...)
 #endif
+
+//#define IP_WORK
 
 extern unsigned long millis(void);
 extern int freeRam (void);
