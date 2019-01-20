@@ -21,6 +21,8 @@
 #define PRINTF(...)
 #endif
 
+//#define IP_WORK
+
 extern unsigned long millis(void);
 extern int freeRam (void);
 
