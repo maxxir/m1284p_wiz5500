@@ -66,7 +66,7 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
 		.sn   = {255, 255, 255, 0},         // Subnet mask
 		.dns =  {8,8,8,8},			  // DNS address (google dns)
 		.gw   = {192, 168, 0, 1}, // Gateway address
-		.dhcp = NETINFO_STATIC};    //Dynamic IP configuration from a DHCP sever
+		.dhcp = NETINFO_STATIC};    //Static IP configuration
 #else
 uint8_t DNS_2nd[4]    = {192, 168, 1, 1};      	// Secondary DNS server IP
 //NIC metrics for another PC (second IP configuration)
@@ -75,7 +75,7 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
 		.sn   = {255, 255, 255, 0},         // Subnet mask
 		.dns =  {8,8,8,8},			  // DNS address (google dns)
 		.gw   = {192, 168, 1, 1}, // Gateway address
-		.dhcp = NETINFO_STATIC};    //Dynamic IP configuration from a DHCP sever
+		.dhcp = NETINFO_STATIC};    //Static IP configuration
 #endif
 
 //*********Global vars
