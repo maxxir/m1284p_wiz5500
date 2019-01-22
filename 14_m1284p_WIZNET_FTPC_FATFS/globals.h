@@ -42,6 +42,8 @@ extern uint8_t FTP_SRV_destip[4];
 #define PRINTF(...)
 #endif
 
+//#define IP_WORK
+
 extern unsigned long millis(void);
 extern int freeRam (void);
 extern char uart0_receive(void);
