@@ -48,6 +48,8 @@ FATFS Fatfs;		//File system object for each logical drive. >= 2
 
 #define SPRINTF(__S, FORMAT, args...) sprintf_P(__S, PSTR(FORMAT),##args)
 
+//#define IP_WORK
+
 extern unsigned long millis(void);
 extern int freeRam (void);
 extern char uart0_receive(void);
