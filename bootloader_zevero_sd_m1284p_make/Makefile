@@ -18,7 +18,7 @@ else
 CSRC        = main.c pff/src/pff.c diskio.c uart/uart.c
 endif
 
-TARGET      = avr_boot
+TARGET      = bootloader_zevero_sd_m1284p
 ASRC        = asmfunc.S
 OPTIMIZE    = -Os -mcall-prologues -ffunction-sections -fdata-sections
 DEFS        = -DBOOT_ADR=$(BOOT_ADR) -DF_CPU=$(F_CPU) -DUSE_LED=$(USE_LED) -DUSE_UART=$(USE_UART) -DSD_CS_PORT=$(SD_CS_PORT) -DSD_CS_DDR=$(SD_CS_DDR) -DSD_CS_BIT=$(SD_CS_BIT)
