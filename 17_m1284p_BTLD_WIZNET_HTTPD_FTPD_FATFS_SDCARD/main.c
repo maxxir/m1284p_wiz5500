@@ -28,13 +28,23 @@
 #define CHK_RAM_LEAKAGE
 #define CHK_UPTIME
 
-//NIC metrics
+#ifdef IP_WORK
+//NIC metrics for WORK PC
 wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
 		.ip   = {192, 168, 0, 199},         // IP address
 		.sn   = {255, 255, 255, 0},         // Subnet mask
 		.dns =  {8,8,8,8},			  // DNS address (google dns)
 		.gw   = {192, 168, 0, 1}, // Gateway address
 		.dhcp = NETINFO_STATIC};    //Static IP configuration
+#else
+//NIC metrics for another PC (second IP configuration)
+wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
+		.ip   = {192, 168, 1, 199},         // IP address
+		.sn   = {255, 255, 255, 0},         // Subnet mask
+		.dns =  {8,8,8,8},			  // DNS address (google dns)
+		.gw   = {192, 168, 1, 1}, // Gateway address
+		.dhcp = NETINFO_STATIC};    //Static IP configuration
+#endif
 
 uint8_t gFTPBUF[_MAX_SS_FTPD]; //512 bytes
 
@@ -151,7 +161,7 @@ volatile unsigned char sig_reset_board; // Flag to reset board
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2b BootLoaded HTTPD and FTPD servers && FATFS SDCARD WIZNET_5500 ETHERNET 16/01/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2c BootLoaded HTTPD and FTPD servers && FATFS SDCARD WIZNET_5500 ETHERNET 16/01/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
