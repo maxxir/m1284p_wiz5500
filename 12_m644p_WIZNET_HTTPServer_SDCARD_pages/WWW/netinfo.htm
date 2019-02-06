@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>W5500-AtMEGA1284p Web Server Network Info</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+  <style>
+label{float:left;text-align:left;width:50px;}li {list-style:none;}
+  </style>
+  <script type='text/javascript' src='ajax.js'>
+</script>
+  <script type='text/javascript' src='netinfo.js'>
+</script>
+</head>
+
+<body onLoad='getNetinfo()'>
+  <div>
+    W5500-AtMEGA1284p Web Server Network Information
+  </div><br>
+
+  <ul>
+    <li><label for='txtmac'>MAC:</label><input id='txtmac' name='mac' type='text' size='20' disabled='disabled'></li>
+
+    <li><label for='txtip'>IP:</label><input id='txtip' name='ip' type='text' size='20' disabled='disabled'></li>
+
+    <li><label for='txtgw'>GW:</label><input id='txtgw' name='gw' type='text' size='20' disabled='disabled'></li>
+
+    <li><label for='txtsn'>SN:</label><input id='txtsn' name='sn' type='text' size='20' disabled='disabled'></li>
+
+    <li><label for='txtdns'>DNS:</label><input id='txtdns' name='dns' type='text' size='20' disabled='disabled'></li>
+  </ul>
+</body>
+</html>
