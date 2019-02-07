@@ -72,7 +72,7 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
  *
  *	 httpServer.c - 36 st_http_socket HTTPSock_Status[4] = { {STATE_HTTP_IDLE, }, }; //For MEGA644p (optimized for RAM size)
  *	 )
- *   (done on v2.4e-mini)
+ *   (done on v2.4e-tiny)
  * (11) Try move all pages saved at <webpage.h> from RAM to FLASH address space
  * Example of flash data access look at:
  * <01_m1284p_bb00_minimum_PSTR_webpage_test>
@@ -166,7 +166,7 @@ void get_mcusr(void)
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega644p v2.4e-mini Static IP HTTP_server SDCARD Pages WIZNET_5500 ETHERNET 06/02/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega644p v2.4e-tiny Static IP HTTP_server SDCARD Pages WIZNET_5500 ETHERNET 06/02/2019\r\n"; // Program name
 
 /*
  * m1284p minimum template, with one button & one led
