@@ -19,6 +19,9 @@
 #include "ff.h"
 #include "diskio.h"
 #include "integer.h"
+
+#include "Ethernet/socket.h"
+#include "Ethernet/wizchip_conf.h"
 #include "Internet/httpServer_avr/httpParser.h"
 FATFS Fatfs;		//File system object for each logical drive. >= 2
 //static FIL File;		//File object. there are _FS_LOCK file objects available, >= 2
@@ -58,7 +61,7 @@ FATFS Fatfs;		//File system object for each logical drive. >= 2
 
 #define SPRINTF(__S, FORMAT, args...) sprintf_P(__S, PSTR(FORMAT),##args)
 
-//#define IP_WORK
+#define IP_WORK
 
 extern unsigned long millis(void);
 extern int freeRam (void);
@@ -84,4 +87,12 @@ extern const char str_prog_name[] PROGMEM;
 #ifdef BOOT_EN
 extern volatile unsigned char sig_reset_board; // Flag to reset board
 #endif
+
+extern wiz_NetInfo netInfo;
+
+//#define _MAIN_DEBUG_ //Not used here
+
+#define CHK_RAM_LEAKAGE
+#define CHK_UPTIME
+
 #endif /* GLOBALS_H_ */

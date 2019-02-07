@@ -13,7 +13,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="de.innot.avreclipse.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=de.innot.avreclipse.buildArtefactType.app,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" description="" id="de.innot.avreclipse.configuration.app.release.1296246863" name="Release" parent="de.innot.avreclipse.configuration.app.release" postannouncebuildStep="Build FIRMWARE.BIN file" postbuildStep="avr-objcopy -R .eeprom -O binary ${BuildArtifactFileName}  FIRMWARE.BIN">
+				<configuration artifactName="${ProjName}" buildArtefactType="de.innot.avreclipse.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=de.innot.avreclipse.buildArtefactType.app,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" description="" id="de.innot.avreclipse.configuration.app.release.1296246863" name="Release" parent="de.innot.avreclipse.configuration.app.release" postannouncebuildStep="Build 1284BOOT.BIN file" postbuildStep="avr-objcopy -R .eeprom -O binary ${BuildArtifactFileName}  1284BOOT.BIN">
 					<folderInfo id="de.innot.avreclipse.configuration.app.release.1296246863." name="/" resourcePath="">
 						<toolChain id="de.innot.avreclipse.toolchain.winavr.app.release.1035343131" name="AVR-GCC Toolchain" superClass="de.innot.avreclipse.toolchain.winavr.app.release">
 							<option id="de.innot.avreclipse.toolchain.options.toolchain.objcopy.flash.app.release.1677804441" name="Generate HEX file for Flash memory" superClass="de.innot.avreclipse.toolchain.options.toolchain.objcopy.flash.app.release"/>

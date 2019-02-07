@@ -23,37 +23,16 @@
 #include "Internet/httpServer_avr/httpServer.h"
 #include "Internet/FTPServer_avr/ftpd.h"
 
-#define _MAIN_DEBUG_
-
-#define CHK_RAM_LEAKAGE
-#define CHK_UPTIME
-
-#ifdef IP_WORK
-//NIC metrics for WORK PC
-wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
-		.ip   = {192, 168, 0, 199},         // IP address
-		.sn   = {255, 255, 255, 0},         // Subnet mask
-		.dns =  {8,8,8,8},			  // DNS address (google dns)
-		.gw   = {192, 168, 0, 1}, // Gateway address
-		.dhcp = NETINFO_STATIC};    //Static IP configuration
-#else
-//NIC metrics for another PC (second IP configuration)
-wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
-		.ip   = {192, 168, 1, 199},         // IP address
-		.sn   = {255, 255, 255, 0},         // Subnet mask
-		.dns =  {8,8,8,8},			  // DNS address (google dns)
-		.gw   = {192, 168, 1, 1}, // Gateway address
-		.dhcp = NETINFO_STATIC};    //Static IP configuration
-#endif
-
 uint8_t gFTPBUF[_MAX_SS_FTPD]; //512 bytes
 
 /*
  * (17) Combine together (16) + abilities to enter BootLoader (reset with WDT),
- * when occur event upload via FTPD to SD file with name <FIRMWARE.BIN> (see STOR_CMD into <ftpd.c>)
+ * when occur event upload via FTPD to SD file with name <1284BOOT.BIN> (see STOR_CMD into <ftpd.c>)
+ * TODO:
  * OK (v1.2)
  * OK (v1.2a) Some minor changes, added key <BOOT_DEBUG>
  * OK (v1.2b) Some minor changes
+ * OK (v1.2d) Changed bootable image to 1284BOOT.BIN
  * Notes.
  * Works in pair with BootLoader project: <bootloader_zevero_sd_m1284p_make>
  * Also see </bootloader_zevero_sd_m1284p_make/m1284p_zevero_sd_m1284p_fuses.txt> to set correct fuses
@@ -161,7 +140,7 @@ volatile unsigned char sig_reset_board; // Flag to reset board
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2c BootLoaded HTTPD and FTPD servers && FATFS SDCARD WIZNET_5500 ETHERNET 16/01/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2d BootLoaded HTTPD and FTPD servers && FATFS SDCARD WIZNET_5500 ETHERNET 07/02/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -672,10 +651,10 @@ int main()
 	fatfs_head_file("index.htm");
 
 #ifdef BOOT_EN
-	//Delete <FIRMWARE.BIN> for BootLoader working properly
-	fatfs_delete("FIRMWARE.BIN");
+	//Delete <1284BOOT.BIN> for BootLoader working properly
+	fatfs_delete("1284BOOT.BIN");
 	//Test message
-	PRINTF("\r\n++Test message from new code #10\r\n");
+	PRINTF("\r\n++Test message from new code #11\r\n");
 #endif
 
 	//Wizchip WIZ5500 Ethernet initialize

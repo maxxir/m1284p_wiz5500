@@ -735,11 +735,11 @@ uint8_t ftpd_run(uint8_t * dbuf)
     				size = SPRINTF(dbuf, "226 Successfully transferred \"%s\"\r\n", ftp.filename);
     				send(CTRL_SOCK, dbuf, size);
 #ifdef BOOT_EN
-    				if (strcasestr_P((const char *)ftp.filename, PSTR("FIRMWARE.BIN")))
+    				if (strcasestr_P((const char *)ftp.filename, PSTR("1284BOOT.BIN")))
     				{
-    					//Found event "FIRMWARE.BIN" upload to SD from FTPD, rise signal to running BootLoader (via WDT reset)
+    					//Found event "1284BOOT.BIN" upload to SD from FTPD, rise signal to running BootLoader (via WDT reset)
 #ifdef BOOT_DEBUG
-    					PRINTF("\r\n\r\n>>Catch <FIRMWARE.BIN> upload event, so run BOOTLOADER\r\n");
+    					PRINTF("\r\n\r\n>>Catch <1284BOOT.BIN> upload event, so run BOOTLOADER\r\n");
 #endif
     					sig_reset_board = 1;
     				}
