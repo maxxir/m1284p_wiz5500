@@ -36,7 +36,7 @@
 /
 /-------------------------------------------------------------------------*/
 
-const char filename[13] ="FIRMWARE.BIN\0"; 	// EDIT FILENAME HERE
+const char filename[13] ="1284BOOT.BIN\0"; 	// EDIT FILENAME HERE
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
