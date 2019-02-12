@@ -1,6 +1,6 @@
 # Hey Emacs, this is a -*- makefile -*-
 #----------------------------------------------------------------------------
-# WinAVR Makefile Template written by Eric B. Weddington, Jörg Wunsch, et al.
+# WinAVR Makefile Template written by Eric B. Weddington, Jï¿½rg Wunsch, et al.
 #
 # Released to the Public Domain
 #
@@ -40,8 +40,8 @@
 #----------------------------------------------------------------------------
 
 #_PG = stk500
-#_PG = mkii
-_PG = usb-asp
+_PG = mkii
+#_PG = usb-asp
  
 
 # MCU name
@@ -366,7 +366,7 @@ SIZE = avr-size
 AR = avr-ar rcs
 NM = avr-nm
 #AVRDUDE = avrdude
-AVRDUDE = D:\tools\WinAVR-20100110\bin\avrdude
+AVRDUDE = E:\WinAVR-20100110\bin\avrdude
 REMOVE = rm -f
 REMOVEDIR = rm -rf
 COPY = cp
@@ -535,7 +535,7 @@ extcoff: $(TARGET).elf
 %.bin: %.elf
 	@echo
 	@echo $(MSG_FLASH) $@
-	$(OBJCOPY) -O binary -R .eeprom -R .fuse -R .lock $< FIRMWARE.BIN
+	$(OBJCOPY) -O binary -R .eeprom -R .fuse -R .lock $< 1284BOOT.BIN
 
 %.eep: %.elf
 	@echo
@@ -619,7 +619,7 @@ clean_list :
 	@echo $(MSG_CLEANING)
 	$(REMOVE) $(TARGET).hex
 	$(REMOVE) $(TARGET).bin
-	$(REMOVE) FIRMWARE.BIN
+	$(REMOVE) 1284BOOT.BIN
 	$(REMOVE) $(TARGET).eep
 	$(REMOVE) $(TARGET).cof
 	$(REMOVE) $(TARGET).elf
