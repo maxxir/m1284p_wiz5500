@@ -39,8 +39,8 @@ int main()
 		else
 		{
 			//sw1 pressed
-			_delay_ms(500); //1Hz
-			//_delay_ms(50); //10Hz
+			//_delay_ms(500); //1Hz
+			_delay_ms(50); //10Hz
 			led1_tgl();
 		}
 		//led1_tgl();
