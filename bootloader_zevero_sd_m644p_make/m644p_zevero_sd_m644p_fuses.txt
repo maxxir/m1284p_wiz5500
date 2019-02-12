@@ -1,0 +1,29 @@
+3) Working FUSE for M644p (with bootloader Zevero-SD)
+I.e - Arduino Bootloader to Flash from SD Card: https://github.com/zevero/avr_boot
+
+PS. SET FUSES:
+==============
+  LOW = 0xFF
+  HIGH = 0xDA
+  EXTD = 0xFD
+========================================
+It means:
+Ext. XTAL High FREQ START-UP 16K CK + 65ms
+JTAG DISABLED
+BROWN-OUT 2.7V ON
+BOOT-LOADER ENABLED
+BOOT Flash Section Size = 2048 words (4096 bytes); Boot Start address = 0x7800 words (0xF000 bytes)
+=========================================
+
+AVRDUDE arguments:
+-U lfuse:w:0xff:m -U hfuse:w:0xda:m -U efuse:w:0xfd:m
+
+Full commands to write from console:
+avrdude -Pusb -cavrispmkii -patmega644p -B5 -U lfuse:w:0xff:m -U hfuse:w:0xda:m -U efuse:w:0xfd:m
+
+
+Detection avrdude CPU: B5 (5us bit clock period for programmer SPI) - VERY IMPORTANT (1Mhz CPU M1284p/M644p FREQ DEFAULT)
+avrdude -Pusb -cavrispmkii -patmega644p -B5  
+
+Check m644p fuse here:
+http://eleccelerator.com/fusecalc/fusecalc.php?chip=atmega644p
