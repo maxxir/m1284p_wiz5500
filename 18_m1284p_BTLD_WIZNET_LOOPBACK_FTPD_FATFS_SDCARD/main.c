@@ -26,6 +26,8 @@ uint8_t gFTPBUF[_MAX_SS_FTPD]; //512 bytes
 
 /*
  * (18) Base template minimal for FTPD bootloaded application with TCP/IP loopback demo (m1284p)
+ * TODO:
+ * OK (v1.1) Add FTPD authorization abilities
  * (17) Combine together (16) + abilities to enter BootLoader (reset with WDT),
  * when occur event upload via FTPD to SD file with name <1284BOOT.BIN> (see STOR_CMD into <ftpd.c>)
  * TODO:
@@ -140,7 +142,7 @@ volatile unsigned char sig_reset_board; // Flag to reset board
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.0 BootLoaded LOOPBACK and FTPD server && FATFS SDCARD WIZNET_5500 ETHERNET 13/02/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.1 BootLoaded LOOPBACK and FTPD server && FATFS SDCARD WIZNET_5500 ETHERNET 15/02/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
