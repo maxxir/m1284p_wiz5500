@@ -54,6 +54,14 @@ FATFS Fatfs;		//File system object for each logical drive. >= 2
 //Disable Bootloader debug message
 //#undef BOOT_DEBUG
 
+//Enabled FTPD authorize
+#define FTPD_AUTH_EN
+
+#ifdef FTPD_AUTH_EN
+extern const char ftpd_user[];
+extern const char ftpd_pass[];
+#endif
+
 #define PRINTF_EN 1
 #if PRINTF_EN
 #define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
