@@ -1205,7 +1205,32 @@ char ftplogin(char * pass)
 {
 	char sendbuf[100];
 	int slen = 0;
-	
+#ifdef FTPD_AUTH_EN
+	if (!strcmp(ftp.username, ftpd_user))
+	{
+		if (!strcmp(pass, ftpd_pass))
+		{
+
+			#if defined(_FTP_DEBUG_)
+				PRINTF("%s logged in OK\r\n", ftp.username);
+			#endif
+			//fsprintf(CTRL_SOCK, logged);
+			slen = SPRINTF(sendbuf, "230 Logged on\r\n");
+			send(CTRL_SOCK, (uint8_t *)sendbuf, slen);
+			ftp.state = FTPS_LOGIN;
+			return 1;
+		}
+
+	}
+	#if defined(_FTP_DEBUG_)
+		PRINTF("%s logged in ERROR\r\n", ftp.username);
+	#endif
+	//fsprintf(CTRL_SOCK, logged);
+	slen = SPRINTF(sendbuf, "530 Login authentication failed\r\n");
+	send(CTRL_SOCK, (uint8_t *)sendbuf, slen);
+	ftp.state = FTPS_NOT_LOGIN;
+	return 0;
+#else
 	//memset(sendbuf, 0, DATA_BUF_SIZE);
 	
 #if defined(_FTP_DEBUG_)
@@ -1217,6 +1242,7 @@ char ftplogin(char * pass)
 	ftp.state = FTPS_LOGIN;
 	
 	return 1;
+#endif
 }
 
 int pport(char * arg)

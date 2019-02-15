@@ -33,6 +33,7 @@ uint8_t gFTPBUF[_MAX_SS_FTPD]; //512 bytes
  * OK (v1.2a) Some minor changes, added key <BOOT_DEBUG>
  * OK (v1.2b) Some minor changes
  * OK (v1.2d) Changed bootable image to 1284BOOT.BIN
+ * OK (v1.2e) Add FTPD authorization abilities (look FTPD_AUTH_EN in globals.h/globals.c)
  * Notes.
  * Works in pair with BootLoader project: <bootloader_zevero_sd_m1284p_make>
  * Also see </bootloader_zevero_sd_m1284p_make/m1284p_zevero_sd_m1284p_fuses.txt> to set correct fuses
@@ -140,7 +141,7 @@ volatile unsigned char sig_reset_board; // Flag to reset board
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2d BootLoaded HTTPD and FTPD servers && FATFS SDCARD WIZNET_5500 ETHERNET 07/02/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2e BootLoaded HTTPD and FTPD servers && FATFS SDCARD WIZNET_5500 ETHERNET 15/02/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128

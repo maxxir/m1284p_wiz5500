@@ -24,3 +24,8 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
 		.dhcp = NETINFO_STATIC};    //Static IP configuration
 #endif
 
+//FTPD user-pass
+#ifdef FTPD_AUTH_EN
+const char ftpd_user[] = "user1234";
+const char ftpd_pass[] = "open_sesame";
+#endif
