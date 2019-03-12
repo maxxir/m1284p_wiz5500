@@ -13,6 +13,9 @@
 #include <avr/pgmspace.h>
 #include "avr/wdt.h" // WatchDog
 
+#include "Ethernet/socket.h"
+#include "Ethernet/wizchip_conf.h"
+
 //******************************* Fat FS declare related: BEGIN
 /*
 #include "string.h"
@@ -36,7 +39,7 @@ static FATFS Fatfs;		//File system object for each logical drive. >= 2
 #define PRINTF(...)
 #endif
 
-//#define IP_WORK
+#define IP_WORK
 
 extern unsigned long millis(void);
 extern int freeRam (void);
@@ -57,5 +60,6 @@ extern const char compile_date[] PROGMEM;
 extern const char compile_time[] PROGMEM;
 extern const char str_prog_name[] PROGMEM;
 
+extern wiz_NetInfo netInfo;
 
 #endif /* GLOBALS_H_ */
