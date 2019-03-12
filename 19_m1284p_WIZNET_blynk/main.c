@@ -19,8 +19,8 @@
 #include "stdbool.h"
 #include "Ethernet/socket.h"
 #include "Ethernet/wizchip_conf.h"
-#include "Application/loopback/loopback.h"
 #include "Application/Blynk/blynk.h"
+#include "Internet/DNS/dns.h"
 
 #define _MAIN_DEBUG_
 
@@ -29,16 +29,33 @@
 //My auth token for my android test application UNO+USB:
 uint8_t auth[] = "c113f724351444fc872ae586d70b18cd";	// You should get Auth Token in the Blynk App
 // IP: 139.59.206.133 for <blynk-cloud.com> via WIN7 nslookup - actually need to use DNS resolving
-uint8_t blynk_server_ip[4] = {139, 59, 206, 133};		// Blynk cloud server IP (cloud.blynk.cc, 8422)
-uint8_t BLYNK_RX_BUF[DATA_BUF_SIZE];
-uint8_t BLYNK_TX_BUF[DATA_BUF_SIZE];
+//Resolve here via DNS query see below Domain_IP[4]
+//uint8_t blynk_server_ip[4] = {139, 59, 206, 133};		// Blynk cloud server IP (cloud.blynk.cc, 8422)
+//uint8_t BLYNK_RX_BUF[DATA_BUF_SIZE];
+uint8_t BLYNK_TX_BUF[BLYNK_DATA_BUF_SIZE];
 
 //***********BLYNK related: END
+
+//***************** DNS: BEGIN
+//////////////////////////////////////////////////
+// Socket & Port number definition for Examples //
+//////////////////////////////////////////////////
+#define SOCK_DNS       5
+
+unsigned char gDATABUF_DNS[512];
+//#define IP_WORK
+
+////////////////
+// DNS client //
+////////////////
+uint8_t Domain_name[] = BLYNK_DEFAULT_DOMAIN;    		// Public russian ntp server - works good via GSM Modem
+uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS Server
+//***************** DNS: END
 
 /*
  * (19)OK (v1.0) Trying port to WIZNET5500 BLYNK IOT app (look: https://blynk.io/)
  * TODO:
- * Add DNS resolve before BLYNK app running to <blynk-cloud.com>
+ * OK (v1.2) Add DNS resolve before BLYNK app running to <blynk-cloud.com>
  * OK (v1.1) Add LED_ON/LED_OFF handle on LED D13 BLYNK Android application
  *  GPIO OUT  - works OK (look ./Application/Blynk/blynkDependency.c digitalWrite(..) && pinMode(..))!
  * OK Add printout <blynk> server metrics on start-up
@@ -83,7 +100,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.1 Static IP BLYNK WIZNET_5500 ETHERNET 12/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2 Static IP BLYNK WIZNET_5500 ETHERNET 12/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -231,16 +248,18 @@ uint16_t adc_read(uint8_t channel)
 
 
 //***************** WIZCHIP INIT: BEGIN
+//Shouldn't used here
+/*
 #define SOCK_TCPS       0
 #define SOCK_UDPS       1
 #define PORT_TCPS		5000
 #define PORT_UDPS       3000
 
-#define ETH_MAX_BUF_SIZE	2048
+#define ETH_MAX_BUF_SIZE	512
 
-unsigned char ethBuf0[ETH_MAX_BUF_SIZE];
-unsigned char ethBuf1[ETH_MAX_BUF_SIZE];
-
+//unsigned char ethBuf0[ETH_MAX_BUF_SIZE];
+//unsigned char ethBuf1[ETH_MAX_BUF_SIZE];
+*/
 void cs_sel() {
 	SPI_WIZNET_ENABLE();
 }
@@ -339,10 +358,56 @@ int main()
 	IO_LIBRARY_Init(); //After that ping must working
 	print_network_information();
 
-	//IOT BLYK app init:
-	/* Blynk client Initialization  */
-	PRINTF("Try connect to BLYNK SERVER [%s]: %d.%d.%d.%d:%d..\n\r",BLYNK_DEFAULT_DOMAIN,blynk_server_ip[0],blynk_server_ip[1],blynk_server_ip[2],blynk_server_ip[3],BLYNK_DEFAULT_PORT);
-	blynk_begin(auth, blynk_server_ip, BLYNK_DEFAULT_PORT, BLYNK_TX_BUF, SOCK_BLYNK_CLIENT);
+
+	/* DNS client Initialization */
+	PRINTF("> [BLYNK] Target Domain Name : %s\r\n", Domain_name);
+    DNS_init(SOCK_DNS, gDATABUF_DNS);
+
+    /* DNS processing */
+    int32_t ret;
+    if ((ret = DNS_run(netInfo.dns, Domain_name, Domain_IP)) > 0) // try to 1st DNS
+    {
+#ifdef _MAIN_DEBUG_
+       PRINTF("> 1st DNS Respond\r\n");
+#endif
+    }
+    else if ((ret != -1) && ((ret = DNS_run(DNS_2nd, Domain_name, Domain_IP))>0))     // retry to 2nd DNS
+    {
+#ifdef _MAIN_DEBUG_
+    	PRINTF("> 2nd DNS Respond\r\n");
+#endif
+    }
+    else if(ret == -1)
+    {
+#ifdef _MAIN_DEBUG_
+    	PRINTF("> MAX_DOMAIN_NAME is too small. Should be redefined it.\r\n");
+#endif
+       ;
+    }
+    else
+    {
+#ifdef _MAIN_DEBUG_
+    	PRINTF("> DNS Failed\r\n");
+#endif
+       ;
+    }
+
+    if(ret > 0)
+    {
+#ifdef _MAIN_DEBUG_
+    	printf("> Translated %s to [%d.%d.%d.%d]\r\n\r\n",Domain_name,Domain_IP[0],Domain_IP[1],Domain_IP[2],Domain_IP[3]);
+#endif
+    	//IOT BLYK app init:
+    	/* Blynk client Initialization  */
+    	PRINTF("Try connect to BLYNK SERVER [%s]: %d.%d.%d.%d:%d..\n\r",Domain_name,Domain_IP[0],Domain_IP[1],Domain_IP[2],Domain_IP[3],BLYNK_DEFAULT_PORT);
+    	blynk_begin(auth, Domain_IP, BLYNK_DEFAULT_PORT, BLYNK_TX_BUF, SOCK_BLYNK_CLIENT);
+    }
+    else
+    {
+    	PRINTF("> [BLYNK] Target Domain Name : %s resolve ERROR\r\nReboot board..\r\n", Domain_name);
+    	while(1);
+    }
+
 
 
 	//Short Blink LED 3 times on startup
@@ -364,12 +429,14 @@ int main()
 	{
 		//Here at least every 1sec
 		wdt_reset(); // WDT reset at least every sec
+		// Blynk process handler
+		blynk_run();
 
 		//Use Hercules Terminal to check loopback tcp:5000 and udp:3000
 		/*
 		 * https://www.hw-group.com/software/hercules-setup-utility
 		 * */
-		loopback_tcps(SOCK_TCPS,ethBuf0,PORT_TCPS);
+		//loopback_tcps(SOCK_TCPS,ethBuf0,PORT_TCPS);
 		//loopback_udps(SOCK_UDPS,ethBuf0,PORT_UDPS);
 
 		//loopback_ret = loopback_tcpc(SOCK_TCPS, gDATABUF, destip, destport);
@@ -391,8 +458,6 @@ int main()
 			}
 		}
 		*/
-    		// Blynk process handler
-    		blynk_run();
 	}
 	return 0;
 }

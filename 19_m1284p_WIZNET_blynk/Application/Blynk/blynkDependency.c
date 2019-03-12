@@ -19,7 +19,7 @@ uint8_t digitalRead(uint8_t pin)
 #elif defined WIZNET_W5500_EVB
 	val	= Chip_GPIO_GetPinState(LPC_GPIO, dio_ports[pin], dio_pins[pin]);
 #else
-	printf("digital pin %d read\r\n", pin);
+	PRINTF("digital pin %d read\r\n", pin);
 #endif
 	return val;
 }
@@ -35,7 +35,7 @@ void digitalWrite(uint8_t pin, uint8_t val)
 	if(val == HIGH) 	Chip_GPIO_SetPinState(LPC_GPIO, dio_ports[pin], dio_pins[pin], true); 	// High
 	else if(val == LOW)	Chip_GPIO_SetPinState(LPC_GPIO, dio_ports[pin], dio_pins[pin], false);	// Low
 #else
-	printf("digital pin %d write val %d\r\n", pin, val);
+	PRINTF("digital pin %d write val %d\r\n", pin, val);
 	if(pin == 13)
 	{
 		if(val == 0)
@@ -56,15 +56,15 @@ uint16_t analogRead(uint8_t pin)
 	uint16_t val = 0;
 	if(pin > 14) analog_pin = pin - 14;
 #ifdef WIZNET_WIZ550WEB
-	//printf("analog_pin = %d\r\n", analog_pin);
+	//PRINTF("analog_pin = %d\r\n", analog_pin);
 	val = get_ADC_val(analog_pin);
 #elif defined WIZNET_W5500_EVB
-	printf("analog_pin = %d\r\n", analog_pin);
+	PRINTF("analog_pin = %d\r\n", analog_pin);
 	if(analog_pin == A0) analog_pin = AIN;
-	printf("changed analog_pin = %d\r\n", analog_pin);
+	PRINTF("changed analog_pin = %d\r\n", analog_pin);
 	val = get_ADC_val(analog_pin);
 #else
-	printf("analog pin %d read\r\n", analog_pin);
+	PRINTF("analog pin %d read\r\n", analog_pin);
 #endif
 	return val;
 }
@@ -72,11 +72,11 @@ uint16_t analogRead(uint8_t pin)
 void analogWrite(uint8_t pin, uint8_t val)
 {
 #ifdef WIZNET_WIZ550WEB
-	printf("Analog Write: Not supported yet. pin %d, val %d", pin, val);
+	PRINTF("Analog Write: Not supported yet. pin %d, val %d", pin, val);
 #elif defined WIZNET_W5500_EVB
-	printf("Analog Write: Not supported yet. pin %d, val %d", pin, val);
+	PRINTF("Analog Write: Not supported yet. pin %d, val %d", pin, val);
 #else
-	printf("analog pin %d write val %d\r\n", pin, val);
+	PRINTF("analog pin %d write val %d\r\n", pin, val);
 #endif
 }
 
@@ -97,7 +97,7 @@ void pinMode(uint8_t pin, pinmode_dir dir)
 	else if(dir == INPUT_PULLUP) 	Chip_GPIO_SetPinDIRInput(LPC_GPIO, dio_ports[pin], dio_pins[pin]);	// Input
 	else if(dir == OUTPUT)			Chip_GPIO_SetPinDIROutput(LPC_GPIO, dio_ports[pin], dio_pins[pin]); // Output
 #else
-	printf("pinmode setting: pin %d dir %d\r\n", pin, dir);
+	PRINTF("pinmode setting: pin %d dir %d\r\n", pin, dir);
 	if((pin == 13)&&(dir ==1))
 	{
 		//m1284p LED1 pin to out
@@ -109,11 +109,11 @@ void pinMode(uint8_t pin, pinmode_dir dir)
 // Virtual Pin Read / Write functions; Not fully supported yet
 uint16_t virtualRead(uint8_t pin)
 {
-	printf("virtual pin %d read\r\n", pin);
+	PRINTF("virtual pin %d read\r\n", pin);
 	return pin;
 }
 
 void virtualWrite(uint8_t pin, uint16_t val)
 {
-	printf("virtual pin %d write val %d\r\n", pin, val);
+	PRINTF("virtual pin %d write val %d\r\n", pin, val);
 }

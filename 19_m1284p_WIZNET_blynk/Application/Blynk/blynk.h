@@ -33,8 +33,17 @@
 #endif
 
 #ifndef BLYNK_INFO_CPU
+/*
+#if defined (__AVR_ATmega644P__)
+	#define BLYNK_INFO_CPU  "ATmega644"
+#elif defined (__AVR_ATmega1284P__)
+	#define BLYNK_INFO_CPU  "ATmega1284"
+#else
 	#define BLYNK_INFO_CPU  "ATmega2560"
 	//#define BLYNK_INFO_CPU  "ST103FRB"
+#endif
+*/
+	#define BLYNK_INFO_CPU  "ATmega2560"
 #endif
 
 #ifndef BLYNK_INFO_CONNECTION

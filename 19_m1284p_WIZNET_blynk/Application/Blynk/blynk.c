@@ -18,10 +18,11 @@
 
 #include "blynk.h"
 #include "blynkDependency.h"
+#include "../globals.h"
 
 //#include "common.h"			// When the project has no "common.h" file, this line have to commented out.
-#ifndef DATA_BUF_SIZE
-	#define DATA_BUF_SIZE	2048
+#ifndef BLYNK_DATA_BUF_SIZE
+	#define BLYNK_DATA_BUF_SIZE	2048
 #endif
 
 uint8_t blynk_connect(void);
@@ -106,7 +107,7 @@ void blynk_run(void)
 #ifdef BLYNK_DEBUG
 				getSn_DIPR(s, destip);
 				destport = getSn_DPORT(s);
-				printf("Blynk[%d] : Connected - %d.%d.%d.%d:%d\r\n",s, destip[0], destip[1], destip[2], destip[3], destport);
+				PRINTF("Blynk[%d] : Connected - %d.%d.%d.%d:%d\r\n",s, destip[0], destip[1], destip[2], destip[3], destport);
 #endif
 			}
 
@@ -117,7 +118,7 @@ void blynk_run(void)
 					{
 						blynk_connected = true;
 #ifdef BLYNK_DEBUG
-						printf("Blynk[%d] : Auth connection complete\r\n", s);
+						PRINTF("Blynk[%d] : Auth connection complete\r\n", s);
 #endif
 					}
 			}
@@ -128,9 +129,9 @@ void blynk_run(void)
 
 			if (t - lastActivityIn > (1000UL * BLYNK_HEARTBEAT + BLYNK_TIMEOUT_MS*3)) {
 #ifdef BLYNK_DEBUG
-				printf("Heartbeat timeout (last in: %lu)\r\n", lastActivityIn);
+				PRINTF("Heartbeat timeout (last in: %lu)\r\n", lastActivityIn);
 #else
-				printf("Heartbeat timeout\r\n");
+				PRINTF("Heartbeat timeout\r\n");
 #endif
 				blynk_connected = false;
 				blynk_connection_available = false;
@@ -142,7 +143,7 @@ void blynk_run(void)
 			{
 				// Send ping if we didn't both send and receive something for BLYNK_HEARTBEAT seconds
 #ifdef BLYNK_DEBUG
-				printf("Heartbeat\r\n");
+				PRINTF("Heartbeat\r\n");
 #endif
 				sendCmd(BLYNK_CMD_PING, 0, NULL, 0, NULL, 0);
 				lastHeartbeat = t;
@@ -151,14 +152,14 @@ void blynk_run(void)
 
 		case SOCK_CLOSE_WAIT:
 #ifdef BLYNK_DEBUG
-		printf("Blynk[%d] : ClOSE WAIT\r\n", s);	// if a peer requests to close the current connection
+		PRINTF("Blynk[%d] : ClOSE WAIT\r\n", s);	// if a peer requests to close the current connection
 #endif
 			disconnect(s);
 			break;
 
 		case SOCK_CLOSED:
 #ifdef BLYNK_DEBUG
-			//printf("> Blynk[%d] : CLOSED\r\n", s);
+			//PRINTF("> Blynk[%d] : CLOSED\r\n", s);
 #endif
 			blynk_connected = false;
 			blynk_connection_available = false;
@@ -166,15 +167,15 @@ void blynk_run(void)
 			if(socket(s, Sn_MR_TCP, blynkclient_port++, 0x00) == s)    /* Reinitialize the socket */
 			{
 #ifdef BLYNK_DEBUG
-				printf("Blynk[%d] : SOCKET OPEN\r\n", s);
+				PRINTF("Blynk[%d] : SOCKET OPEN\r\n", s);
 #endif
 			}
 			break;
 
 		case SOCK_INIT:
 #ifdef BLYNK_DEBUG
-			printf("Blynk[%d] : Connecting to ", s);
-			printf("%d.%d.%d.%d:%d\r\n", server_ip[0], server_ip[1], server_ip[2], server_ip[3], server_port);
+			PRINTF("Blynk[%d] : Connecting to ", s);
+			PRINTF("%d.%d.%d.%d:%d\r\n", server_ip[0], server_ip[1], server_ip[2], server_ip[3], server_port);
 #endif
 			connect(s, server_ip, server_port);
 			break;
@@ -233,15 +234,15 @@ uint8_t blynk_connect(void)
 	{
 		if (BLYNK_TIMEOUT == hdr.length)
 		{
-			printf("Timeout\r\n");
+			PRINTF("Timeout\r\n");
 		}
 		else if (BLYNK_INVALID_TOKEN == hdr.length)
 		{
-			printf("Invalid auth token\r\n");
+			PRINTF("Invalid auth token\r\n");
 		}
 		else
 		{
-			printf("Connect failed (code: %d)\r\n", hdr.length);
+			PRINTF("Connect failed (code: %d)\r\n", hdr.length);
 
 			// Send some invalid headers to server for disconnection
 			hdr.type = 255;
@@ -272,9 +273,9 @@ uint8_t blynk_connect(void)
     deltaCmd = 1000;
 #endif
 
-    printf("Ready!\r\n");
+    PRINTF("Ready!\r\n");
 #ifdef BLYNK_DEBUG
-    printf("Roundtrip: %ldms\r\n", lastActivityIn-t);
+    PRINTF("Roundtrip: %ldms\r\n", lastActivityIn-t);
 #endif
 
     return true;
@@ -311,27 +312,27 @@ void processInput(void)
 		{
 			if (hdr.length > BLYNK_MAX_READBYTES)
 			{
-				printf("Packet size (%u) > max allowed (%u)\r\n", hdr.length, BLYNK_MAX_READBYTES);
+				PRINTF("Packet size (%u) > max allowed (%u)\r\n", hdr.length, BLYNK_MAX_READBYTES);
 				disconnect(s);
 				return;
 			}
 
-			//printf("hdr.length = %d\r\n", hdr.length);
+			//PRINTF("hdr.length = %d\r\n", hdr.length);
 			if (hdr.length != recv(s, msgbuf, hdr.length))
 			{
-				printf("Can't read body\r\n");
+				PRINTF("Can't read body\r\n");
 				return;
 			}
 			msgbuf[hdr.length] = '\0';	 // Add 1 to zero-terminate
 
 #ifdef BLYNK_DEBUG
-			printf(">");
+			PRINTF(">");
 			for(i = 0; i < hdr.length; i++)
 			{
-				if(msgbuf[i] != '\0') 	printf("%c", msgbuf[i]);
-				else					printf(" ");
+				if(msgbuf[i] != '\0') 	PRINTF("%c", msgbuf[i]);
+				else					PRINTF(" ");
 			}
-			printf("\r\n");
+			PRINTF("\r\n");
 #endif
 
 			currentMsgId = hdr.msg_id;
@@ -340,7 +341,7 @@ void processInput(void)
 		} break;
 
 		default:
-			printf("Invalid header type: %d\r\n", hdr.type);
+			PRINTF("Invalid header type: %d\r\n", hdr.type);
 			disconnect(s);
 			return;
 	}
@@ -423,22 +424,22 @@ void processCmd(uint8_t * buff, size_t len)
 
 	if(!strcmp(cmd, "dr")) // digital pin read
 	{
-		rsp_len = sprintf((char *)rsp_mem, "dw %d %d ", pin, digitalRead(pin));
+		rsp_len = SPRINTF((char *)rsp_mem, "dw %d %d ", pin, digitalRead(pin));
 		replacetonull(rsp_mem, ' ');
 		sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
 	}
 	else if(!strcmp(cmd, "ar")) // analog pin read
 	{
-		rsp_len = sprintf((char *)rsp_mem, "aw %d %d ", pin, analogRead(pin));
+		rsp_len = SPRINTF((char *)rsp_mem, "aw %d %d ", pin, analogRead(pin));
 		replacetonull(rsp_mem, ' ');
 		sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
 	}
 	else if(!strcmp(cmd, "vr")) // virtual pin read
 	{
 #ifdef BLYNK_DEBUG
-		printf("vr command: Not fully supported yet\r\n");
+		PRINTF("vr command: Not fully supported yet\r\n");
 #endif
-		rsp_len = sprintf((char *)rsp_mem, "vr %d %d ", pin, virtualRead(pin));
+		rsp_len = SPRINTF((char *)rsp_mem, "vr %d %d ", pin, virtualRead(pin));
 		replacetonull(rsp_mem, ' ');
 		sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
 
@@ -457,14 +458,14 @@ void processCmd(uint8_t * buff, size_t len)
 		if(!strcmp(cmd, "vw")) // virtual pin write
 		{
 #ifdef BLYNK_DEBUG
-			printf("vw command: Not fully supported yet\r\n");
+			PRINTF("vw command: Not fully supported yet\r\n");
 #endif
 			nexttok = blynkparam_get();
 			w_param = ATOI((uint8_t *)nexttok, 10);
 			virtualWrite(pin, w_param);
 
 			// update widget state
-			//rsp_len = sprintf((char *)rsp_mem, "vw %d %d ", pin, w_param);
+			//rsp_len = SPRINTF((char *)rsp_mem, "vw %d %d ", pin, w_param);
 			//replacetonull(rsp_mem, ' ');
 			//sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
 
@@ -499,7 +500,7 @@ void processCmd(uint8_t * buff, size_t len)
 					pinMode(pin, INPUT_PULLUP);
 				} else {
 #ifdef BLYNK_DEBUG
-					printf("Invalid pinMode %u -> %s\r\n", pin, nexttok);
+					PRINTF("Invalid pinMode %u -> %s\r\n", pin, nexttok);
 #endif
 				}
 				nexttok = blynkparam_get();
@@ -521,7 +522,7 @@ void processCmd(uint8_t * buff, size_t len)
 			digitalWrite(pin, w_param ? HIGH : LOW);
 
 			// update widget state
-			//rsp_len = sprintf((char *)rsp_mem, "dw %d %d ", pin, digitalRead(pin));
+			//rsp_len = SPRINTF((char *)rsp_mem, "dw %d %d ", pin, digitalRead(pin));
 			//replacetonull(rsp_mem, ' ');
 			//sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
 		}
@@ -532,13 +533,13 @@ void processCmd(uint8_t * buff, size_t len)
 			analogWrite(pin, w_param);
 
 			// update widget state
-			//rsp_len = sprintf((char *)rsp_mem, "aw %d %d ", pin, digitalRead(pin));
+			//rsp_len = SPRINTF((char *)rsp_mem, "aw %d %d ", pin, digitalRead(pin));
 			//replacetonull(rsp_mem, ' ');
 			//sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
 		}
 		else
 		{
-			printf("Invalid HW cmd: %s\r\n", cmd);
+			PRINTF("Invalid HW cmd: %s\r\n", cmd);
 		}
 	}
 }
@@ -551,7 +552,7 @@ uint8_t readHeader(BlynkHeader * hdr)
 	if((len = getSn_RX_RSR(s)) > 0)
 	{
 #ifdef BLYNK_DEBUG
-		//printf("recv header len = %d\r\n", len);
+		//PRINTF("recv header len = %d\r\n", len);
 #endif
 		if(BLINK_HEADER_SIZE != recv(s, msgbuf, BLINK_HEADER_SIZE))
 		{
@@ -568,7 +569,7 @@ uint8_t readHeader(BlynkHeader * hdr)
 		hdr->msg_id = ntohs(hdr->msg_id);
 		hdr->length = ntohs(hdr->length);
 #ifdef BLYNK_DEBUG
-		printf(">msg %d,%u,%u\r\n", hdr->type, hdr->msg_id, hdr->length);
+		PRINTF(">msg %d,%u,%u\r\n", hdr->type, hdr->msg_id, hdr->length);
 #endif
 		return true;
 	}
@@ -591,7 +592,7 @@ void sendCmd(uint8_t cmd, uint16_t id, uint8_t * data, size_t length, uint8_t * 
 	if(getSn_SR(s) != SOCK_ESTABLISHED)
 	{
 #ifdef BLYNK_DEBUG
-		printf("Cmd not sent\r\n");
+		PRINTF("Cmd not sent\r\n");
 #endif
 		return;
 	}
@@ -612,7 +613,7 @@ void sendCmd(uint8_t cmd, uint16_t id, uint8_t * data, size_t length, uint8_t * 
     msgbuf[hsize++] = (uint8_t)((0xff00 & hdr.length) >> 8);
 
 #ifdef BLYNK_DEBUG
-    printf("<msg %d,%u,%u\r\n", cmd, id, length+length2);
+    PRINTF("<msg %d,%u,%u\r\n", cmd, id, length+length2);
 #endif
 
     wlen += (size_t)send(s, msgbuf, hsize);
@@ -620,30 +621,30 @@ void sendCmd(uint8_t cmd, uint16_t id, uint8_t * data, size_t length, uint8_t * 
     if (cmd != BLYNK_CMD_RESPONSE) {
         if (length) {
 #ifdef BLYNK_DEBUG
-        	printf("<");
+        	PRINTF("<");
 			for(i = 0; i < length; i++)
 			{
-				if(data[i] != '\0') 	printf("%c", data[i]);
-				else					printf(" ");
+				if(data[i] != '\0') 	PRINTF("%c", data[i]);
+				else					PRINTF(" ");
 			}
-			printf("\r\n");
+			PRINTF("\r\n");
 #endif
             wlen += (size_t)send(s, (uint8_t *)data, length);
         }
         if (length2) {
 #ifdef BLYNK_DEBUG
-        	printf("<");
+        	PRINTF("<");
 			for(i = 0; i < length2; i++)
 			{
-				if(data2[i] != '\0') 	printf("%c", data2[i]);
-				else					printf(" ");
+				if(data2[i] != '\0') 	PRINTF("%c", data2[i]);
+				else					PRINTF(" ");
 			}
-			printf("\r\n");
+			PRINTF("\r\n");
 #endif
             wlen += (size_t)send(s, (uint8_t *)data2, length2);
         }
         if (wlen != hsize+length+length2) {
-			printf("Sent %u/%u\r\n", wlen, hsize+length+length2);
+			PRINTF("Sent %u/%u\r\n", wlen, hsize+length+length2);
 			disconnect(s);
 			return;
 		}
@@ -655,7 +656,7 @@ void sendCmd(uint8_t cmd, uint16_t id, uint8_t * data, size_t length, uint8_t * 
     lastActivityOut = ts;
     if (deltaCmd < (1000/BLYNK_MSG_LIMIT)) {
 		//::delay(5000);
-    	printf("Flood\r\n");
+    	PRINTF("Flood\r\n");
     	disconnect(s);
     }
 #else
