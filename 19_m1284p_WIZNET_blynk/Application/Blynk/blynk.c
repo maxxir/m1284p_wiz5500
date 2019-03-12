@@ -424,13 +424,17 @@ void processCmd(uint8_t * buff, size_t len)
 
 	if(!strcmp(cmd, "dr")) // digital pin read
 	{
-		rsp_len = SPRINTF((char *)rsp_mem, "dw %d %d ", pin, digitalRead(pin));
+		//This is bug on LPc13xx original sources, last space symbol is unnecessary
+		//rsp_len = SPRINTF((char *)rsp_mem, "dw %d %d ", pin, digitalRead(pin));
+		rsp_len = SPRINTF((char *)rsp_mem, "dw %d %d", pin, digitalRead(pin));
 		replacetonull(rsp_mem, ' ');
 		sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
 	}
 	else if(!strcmp(cmd, "ar")) // analog pin read
 	{
-		rsp_len = SPRINTF((char *)rsp_mem, "aw %d %d ", pin, analogRead(pin));
+		//This is bug on LPc13xx original sources, last space symbol is unnecessary (as I think..)
+		//rsp_len = SPRINTF((char *)rsp_mem, "aw %d %d ", pin, analogRead(pin));
+		rsp_len = SPRINTF((char *)rsp_mem, "aw %d %d", pin, analogRead(pin));
 		replacetonull(rsp_mem, ' ');
 		sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
 	}

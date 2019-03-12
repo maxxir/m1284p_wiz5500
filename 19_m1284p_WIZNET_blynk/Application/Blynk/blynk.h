@@ -43,7 +43,9 @@
 	//#define BLYNK_INFO_CPU  "ST103FRB"
 #endif
 */
-	#define BLYNK_INFO_CPU  "ATmega2560"
+	#define BLYNK_INFO_CPU  "ATmega1284"
+	//#define BLYNK_INFO_CPU  "ATmega2560"
+	//#define BLYNK_INFO_CPU  "ATmega328P"
 #endif
 
 #ifndef BLYNK_INFO_CONNECTION

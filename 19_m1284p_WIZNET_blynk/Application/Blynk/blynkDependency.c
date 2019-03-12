@@ -20,6 +20,15 @@ uint8_t digitalRead(uint8_t pin)
 	val	= Chip_GPIO_GetPinState(LPC_GPIO, dio_ports[pin], dio_pins[pin]);
 #else
 	PRINTF("digital pin %d read\r\n", pin);
+	if(pin == 21)
+	{
+		val = sw1_read()?0:!0;
+		PRINTF("SW1 is: %d %s\r\n", val, val?"HIGH":"LOW");
+	}
+	else
+	{
+		val = 1;
+	}
 #endif
 	return val;
 }
@@ -36,7 +45,7 @@ void digitalWrite(uint8_t pin, uint8_t val)
 	else if(val == LOW)	Chip_GPIO_SetPinState(LPC_GPIO, dio_ports[pin], dio_pins[pin], false);	// Low
 #else
 	PRINTF("digital pin %d write val %d\r\n", pin, val);
-	if(pin == 13)
+	if(pin == 20)
 	{
 		if(val == 0)
 		{
@@ -98,10 +107,15 @@ void pinMode(uint8_t pin, pinmode_dir dir)
 	else if(dir == OUTPUT)			Chip_GPIO_SetPinDIROutput(LPC_GPIO, dio_ports[pin], dio_pins[pin]); // Output
 #else
 	PRINTF("pinmode setting: pin %d dir %d\r\n", pin, dir);
-	if((pin == 13)&&(dir ==1))
+	if((pin == 20)&&(dir ==1))
 	{
 		//m1284p LED1 pin to out
 		led1_conf();
+	}
+	else if((pin == 21)&&(dir == 0))
+	{
+		//m1284p SW1 pin to input
+		sw1_conf();
 	}
 #endif
 }

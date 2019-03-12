@@ -58,9 +58,9 @@ uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS S
  * OK (v1.2) Add DNS resolve before BLYNK app running to <blynk-cloud.com>
  * OK (v1.1) Add LED_ON/LED_OFF handle on LED D13 BLYNK Android application
  *  GPIO OUT  - works OK (look ./Application/Blynk/blynkDependency.c digitalWrite(..) && pinMode(..))!
- * OK Add printout <blynk> server metrics on start-up
+ * OK(v1.2) Add printout <blynk> server metrics on start-up
  * Need to try next:
- * GPIO IN (via virtual pins?)
+ * OK (v1.3)GPIO IN - fixed bug (remove redundant space symbol in <dw xx xx >)
  * Virtual IN/OUT
  * Analog Read/Write
  * Restore pins state on board reboot
@@ -100,7 +100,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2 Static IP BLYNK WIZNET_5500 ETHERNET 12/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.3 Static IP BLYNK WIZNET_5500 ETHERNET 12/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
