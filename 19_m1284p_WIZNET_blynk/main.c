@@ -380,8 +380,8 @@ void IO_LIBRARY_Init(void) {
 	wizchip_setnetinfo(&netInfo);
 	//wizchip_setinterruptmask(IK_SOCK_0);
 }
-//***************** WIZCHIP INIT: END
 
+//***************** WIZCHIP INIT: END
 /*
 void spi_speed_tst(void)
 {
