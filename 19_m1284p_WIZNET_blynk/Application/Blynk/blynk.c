@@ -760,3 +760,14 @@ static void replacetonull(uint8_t * str, uint8_t c)
 	for (x = 0; str[x]; x++)
 		if (str[x] == c) str[x] = NULL;
 }
+
+uint8_t is_blynk_connection_available(void)
+{
+	return blynk_connection_available;
+}
+
+//Requests Server to re-send current values for all widgets
+void blynk_syncAll(void)
+{
+	sendCmd(BLYNK_CMD_HARDWARE_SYNC, 0, NULL, 0, NULL, 0);
+}

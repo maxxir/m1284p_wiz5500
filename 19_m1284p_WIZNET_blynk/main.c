@@ -63,7 +63,7 @@ uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS S
  * OK (v1.3)GPIO IN - fixed bug (remove redundant space symbol in <dw xx xx >)
  * Virtual IN/OUT -Not fully supported yet, so decide not use here..
  * OK (v1.4)Analog Read/Write
- * Restore pins state on board reboot
+ * OK (v1.5)Restore pins state on board reboot
  * OK ??3.Try fix frequent reconnection with blynk server - every ~22sec may be this OK.
  * Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
  *
@@ -100,7 +100,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.4 Static IP BLYNK WIZNET_5500 ETHERNET 14/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.5 Static IP BLYNK WIZNET_5500 ETHERNET 14/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -497,7 +497,8 @@ int main()
 
 	/* Loopback Test: TCP Server and UDP */
 	// Test for Ethernet data transfer validation
-	uint32_t timer_link_1sec = millis();
+	uint32_t timer_tick_1sec = millis();
+	uint8_t blynk_restore_connection = 1;
 	while(1)
 	{
 		//Here at least every 1sec
@@ -515,22 +516,23 @@ int main()
 		//loopback_ret = loopback_tcpc(SOCK_TCPS, gDATABUF, destip, destport);
 		//if(loopback_ret < 0) printf("loopback ret: %ld\r\n", loopback_ret); // TCP Socket Error code
 
-		//Shouldn't use it here
-		/*
-		if((millis()-timer_link_1sec)> 1000)
+		//Here every 1sec
+		if((millis()-timer_tick_1sec)> 1000)
 		{
 			//here every 1 sec
-			timer_link_1sec = millis();
-			if(wizphy_getphylink() == PHY_LINK_ON)
+			timer_tick_1sec = millis();
+			//To restore GPIO state on start-up application
+			if(blynk_restore_connection)
 			{
-				led1_high();
-			}
-			else
-			{
-				led1_low();
+				if(is_blynk_connection_available())
+				{
+					blynk_restore_connection = 0;
+					//Requests Server to re-send current values for all widgets
+					PRINTF("++blynk_syncAll event\r\n"); //Just for debug
+					blynk_syncAll();
+				}
 			}
 		}
-		*/
 	}
 	return 0;
 }

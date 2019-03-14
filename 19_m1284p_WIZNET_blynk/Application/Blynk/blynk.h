@@ -79,6 +79,7 @@ enum BlynkCmd
     BLYNK_CMD_EMAIL				= 13,
     BLYNK_CMD_PUSH_NOTIFICATION	= 14,
     BLYNK_CMD_BRIDGE			= 15,
+    BLYNK_CMD_HARDWARE_SYNC  	= 16,
     BLYNK_CMD_HARDWARE			= 20
 };
 
@@ -136,6 +137,9 @@ BlynkParam;
 void blynk_begin(uint8_t * auth, uint8_t * dest_ip, uint16_t dest_port, uint8_t * buf, uint8_t socket);
 void blynk_run(void);
 
-void blynk_time_handler(void);
+//void blynk_time_handler(void);
+uint8_t is_blynk_connection_available(void);
+void sendCmd(uint8_t cmd, uint16_t id, uint8_t * data, size_t length, uint8_t * data2, size_t length2);
+void blynk_syncAll(void);
 
 #endif
