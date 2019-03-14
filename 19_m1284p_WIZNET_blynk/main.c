@@ -61,8 +61,8 @@ uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS S
  * OK(v1.2) Add printout <blynk> server metrics on start-up
  * Need to try next:
  * OK (v1.3)GPIO IN - fixed bug (remove redundant space symbol in <dw xx xx >)
- * Virtual IN/OUT
- * Analog Read/Write
+ * Virtual IN/OUT -Not fully supported yet, so decide not use here..
+ * OK (v1.4)Analog Read/Write
  * Restore pins state on board reboot
  * OK ??3.Try fix frequent reconnection with blynk server - every ~22sec may be this OK.
  * Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
@@ -100,7 +100,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.3 Static IP BLYNK WIZNET_5500 ETHERNET 12/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.4 Static IP BLYNK WIZNET_5500 ETHERNET 14/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -245,6 +245,79 @@ uint16_t adc_read(uint8_t channel)
 	return ADCW;                    //Returns the ADC value of the chosen channel
 }
 //***************** ADC: END
+
+//*********************************Timer2 PWM: BEGIN
+/*
+ * Handle PWM out PD7-PIN15:
+ * OCR2A = 0/127/255; Duty 0/50/100%
+
+ * Handle PWM out PD6-PIN14:
+ * OCR2B = 0/127/255; Duty 0/50/100%
+
+ */
+void pwm8bit_timer2_init(void)
+{
+	//PWM on TIMER2 (PD7/OC2A) &&  TIMER2 (PD6/OC2B)
+	// PHASE CORRECT PWM 8-bit mode setup
+	// 31.25kHz FREQ OUT
+
+	// Set PD7 to OUT
+	DDRD |= (1<<7);
+	// Set PD6 to OUT
+	DDRD |= (1<<6);
+	/*
+	 * Clear OCnA/OCnB/OCnC on compare
+	 * match when up-counting. Set
+	 * OCnA/OCnB/OCnC on compare match
+	 * when downcounting.
+	*/
+	TCCR2A = (1<<COM2A1)|(1<<COM2B1);
+
+	/*
+	 * PHASE CORRECT PWM 8-bit
+	*/
+	TCCR2A |= (1<<WGM20);
+
+	/*
+	 * clkI/O/1 (No prescaling)
+	*/
+	TCCR2B = (1<<CS20); // 16Mhz input
+
+	OCR2A = 0x0;// SET output duty cycle OCR2A 0%
+	OCR2B = 0x0;// SET output duty cycle OCR2B 0%
+}
+
+void pwm8bitfast_timer2_init(void)
+{
+	//PWM on TIMER2 (PD7/OC2A) && (PD6/OC2B )
+	// FAST PWM 8-bit mode setup
+	// 62.5kHz FREQ OUT
+
+	// Set PD7 to OUT
+	DDRD |= (1<<7);
+	// Set PD6 to OUT
+	DDRD |= (1<<6);
+	/*
+	 * Compare Output Mode, Fast PWM
+	 * Clear OCnA/OCnB/OCnC on compare match,
+	 * Set OCnA/OCnB/OCnC at TOP
+	*/
+	TCCR2A = (1<<COM2A1)|(1<<COM2B1);
+
+	/*
+	 * FAST PWM 8-bit
+	*/
+	TCCR2A |= (1<<WGM21)|(1<<WGM20);
+
+	/*
+	 * clkI/O/1 (No prescaling)
+	*/
+	TCCR2B = (1<<CS20); // 16Mhz input
+
+	OCR2A = 0x0;// SET output OCR2A duty cycle 0%
+	OCR2B = 0x0;// SET output OCR2B duty cycle 0%
+}
+//*********************************Timer2 PWM: END
 
 
 //***************** WIZCHIP INIT: BEGIN
@@ -516,6 +589,9 @@ static void avr_init(void)
 
 
 	sw1_conf();//SW1 internal pull-up
+
+	//pwm8bitfast_timer2_init(); // PD7/OC2A used as FAST 8bit PWM (62.5kHz FREQ OUT)
+	pwm8bit_timer2_init(); // PD7/OC2A used as PHASE CORRECT 8bit PWM (31.25kHz FREQ OUT)
 
 	sei(); //re-enable global interrupts
 

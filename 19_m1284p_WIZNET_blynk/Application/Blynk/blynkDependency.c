@@ -73,7 +73,11 @@ uint16_t analogRead(uint8_t pin)
 	PRINTF("changed analog_pin = %d\r\n", analog_pin);
 	val = get_ADC_val(analog_pin);
 #else
-	PRINTF("analog pin %d read\r\n", analog_pin);
+	if(pin = 6)
+	{
+		val = adc_read(6);
+	}
+	PRINTF("analog pin %d = %d\r\n", analog_pin, val);
 #endif
 	return val;
 }
@@ -86,6 +90,14 @@ void analogWrite(uint8_t pin, uint8_t val)
 	PRINTF("Analog Write: Not supported yet. pin %d, val %d", pin, val);
 #else
 	PRINTF("analog pin %d write val %d\r\n", pin, val);
+/*
+* Handle PWM out PD7-PIN15:
+* OCR2A = 0/127/255; Duty 0/50/100%
+*/
+	if(pin == 15)
+	{
+		OCR2A = val;
+	}
 #endif
 }
 

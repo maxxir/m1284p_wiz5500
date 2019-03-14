@@ -38,7 +38,7 @@ static FATFS Fatfs;		//File system object for each logical drive. >= 2
 
 #define SPRINTF(__S, FORMAT, args...) sprintf_P(__S, PSTR(FORMAT),##args)
 
-//#define IP_WORK
+#define IP_WORK
 
 extern unsigned long millis(void);
 extern int freeRam (void);
@@ -63,5 +63,7 @@ extern wiz_NetInfo netInfo;
 extern uint8_t DNS_2nd[4];
 
 #define BLYNK_DATA_BUF_SIZE 1024
+
+extern uint16_t adc_read(uint8_t channel);
 
 #endif /* GLOBALS_H_ */
