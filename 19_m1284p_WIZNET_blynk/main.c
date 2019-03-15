@@ -64,10 +64,9 @@ uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS S
  * OK(v1.2) Add printout <blynk> server metrics on start-up
  * Need to try next:
  * OK (v1.3)GPIO IN - fixed bug (remove redundant space symbol in <dw xx xx >)
- * Virtual IN/OUT - virtual pin push message see below
+ * OK Virtual IN/OUT - virtual pin push message see below (1.7)
  * OK (v1.4)Analog Read/Write
  * OK (v1.5)Restore pins state on board reboot
- * OK ??3.Try fix frequent reconnection with blynk server - every ~22sec may be this OK.
  * OK (v1.6) Add push event (P13/PD.5 toggle every 10 sec && send state P13 to BLYNK server)
  * OK (v1.7) Add push event to Virtual PIN1. Every 10sec push message: "Uptime: xxx sec", to BLYNK server (widget Terminal)
  * Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
