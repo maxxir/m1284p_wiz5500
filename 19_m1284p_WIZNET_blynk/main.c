@@ -61,11 +61,12 @@ uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS S
  * OK(v1.2) Add printout <blynk> server metrics on start-up
  * Need to try next:
  * OK (v1.3)GPIO IN - fixed bug (remove redundant space symbol in <dw xx xx >)
- * Virtual IN/OUT -Not fully supported yet, so decide not use here..
+ * Virtual IN/OUT - virtual pin push message see below
  * OK (v1.4)Analog Read/Write
  * OK (v1.5)Restore pins state on board reboot
  * OK ??3.Try fix frequent reconnection with blynk server - every ~22sec may be this OK.
  * OK (v1.6) Add push event (P13/PD.5 toggle every 10 sec && send state P13 to BLYNK server)
+ * OK (v1.7) Add push event to Virtual PIN1. Every 10sec push message: "Uptime: xxx sec", to BLYNK server (widget Terminal)
  * Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
  *
  * (3) Trying WIZNET5500 init with using official Wiznet ioLibrary_Driver
@@ -101,7 +102,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.6 Static IP BLYNK WIZNET_5500 ETHERNET 14/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.7 Static IP BLYNK WIZNET_5500 ETHERNET 14/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -471,6 +472,7 @@ int main()
 	uint32_t timer_tick_1sec = millis();
 	uint8_t blynk_restore_connection = 1;
 	uint8_t timer_led2_push_10sec = 0;
+	static uint8_t _msg[64] = "\0";
 	while(1)
 	{
 		//Here at least every 1sec
@@ -494,13 +496,17 @@ int main()
 					blynk_syncAll();
 				}
 			}
-			//Every 10sec event for LED2 PIN13
+			//Every 10sec event for LED2 PIN13, and uptime device
 			if(++timer_led2_push_10sec == 10)
 			{
 				timer_led2_push_10sec = 0; //Clear timer_led2..
-				//Every 10sec toggle, and push LED2 PIN13/PD5 state to BLYNK server
+				//Every 10sec toggle, and push LED2 PIN13/PD5 state to BLYNK server (widget Value Display)
 				led2_tgl();
 				blynk_push_pin(13);
+
+				//Every 10sec push message: "Uptime: xxx sec", to BLYNK server (widget Terminal)
+				SPRINTF(_msg, "Uptime: %lu sec\r\n", millis()/1000);
+				blynk_push_virtual_pin_msg(1, _msg);
 			}
 		}
 	}

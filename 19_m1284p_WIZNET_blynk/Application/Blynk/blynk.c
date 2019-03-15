@@ -784,3 +784,14 @@ void blynk_push_pin(uint8_t pin)
 	sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
 }
 
+void blynk_push_virtual_pin_msg(uint8_t pin, uint8_t * data)
+{
+	uint8_t rsp_mem[128];
+	uint16_t rsp_len;
+	memset(rsp_mem, 0, sizeof(rsp_mem));
+	rsp_len = SPRINTF((char *)rsp_mem, "vw %d %s", pin, data);
+	replacetonull(rsp_mem, ' ');
+	sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
+}
+
+

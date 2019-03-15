@@ -142,6 +142,6 @@ uint8_t is_blynk_connection_available(void);
 void sendCmd(uint8_t cmd, uint16_t id, uint8_t * data, size_t length, uint8_t * data2, size_t length2);
 void blynk_syncAll(void);
 void blynk_push_pin(uint8_t pin);
-
+void blynk_push_virtual_pin_msg(uint8_t pin, uint8_t * data);
 #endif
 
