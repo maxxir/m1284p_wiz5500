@@ -26,12 +26,15 @@
 
 //***********BLYNK related: BEGIN
 #define SOCK_BLYNK_CLIENT		6
-//My auth token for my android test application MEGA+USB:
-uint8_t auth[] = "c113f724351444fc872ae586d70b18cd";	// You should get Auth Token in the Blynk App
+//My auth token for my android test application GENERIC+W5500:
+uint8_t auth[] = "c113f724351444fc872ae586d70b18cd";	// You should get your own Auth Token in the BLYNK App
+
+// Shouldn't used here, because used DNS resolving BLYNK server IP
 // IP: 139.59.206.133 for <blynk-cloud.com> via WIN7 nslookup - actually need to use DNS resolving
 //Resolve here via DNS query see below Domain_IP[4]
 //uint8_t blynk_server_ip[4] = {139, 59, 206, 133};		// Blynk cloud server IP (cloud.blynk.cc, 8422)
 //uint8_t BLYNK_RX_BUF[DATA_BUF_SIZE];
+
 uint8_t BLYNK_TX_BUF[BLYNK_DATA_BUF_SIZE];
 
 //***********BLYNK related: END
