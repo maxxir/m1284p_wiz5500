@@ -693,11 +693,13 @@ uint32_t millis(void)
 }
 */
 
+/*
 // Time count function; this function have to call by timer (1ms)
 void blynk_time_handler(void)
 {
 	blynk_time_1ms++;
 }
+*/
 
 // Custom delay for checking timeout count
 uint8_t blynk_custom_delay(uint32_t delayms)
@@ -771,3 +773,14 @@ void blynk_syncAll(void)
 {
 	sendCmd(BLYNK_CMD_HARDWARE_SYNC, 0, NULL, 0, NULL, 0);
 }
+
+void blynk_push_pin(uint8_t pin)
+{
+	uint8_t rsp_mem[16];
+	uint16_t rsp_len;
+	memset(rsp_mem, 0, sizeof(rsp_mem));
+	rsp_len = SPRINTF((char *)rsp_mem, "dw %d %d", pin, digitalRead(pin));
+	replacetonull(rsp_mem, ' ');
+	sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
+}
+

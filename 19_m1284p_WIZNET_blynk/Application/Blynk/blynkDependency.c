@@ -25,6 +25,11 @@ uint8_t digitalRead(uint8_t pin)
 		val = sw1_read()?0:!0;
 		PRINTF("SW1 is: %d %s\r\n", val, val?"HIGH":"LOW");
 	}
+	else if(pin == 13)
+	{
+		val = led2_read()?1:0;
+		PRINTF("LED2 is: %d %s\r\n", val, val?"HIGH":"LOW");
+	}
 	else
 	{
 		val = 1;

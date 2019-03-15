@@ -16,6 +16,7 @@
 #include "Ethernet/socket.h"
 #include "Ethernet/wizchip_conf.h"
 
+//Shouldn't use here
 //******************************* Fat FS declare related: BEGIN
 /*
 #include "string.h"
@@ -44,12 +45,19 @@ extern unsigned long millis(void);
 extern int freeRam (void);
 
 //M644P/M1284p Users LEDS:
-//LED1/PORTC.4- m644p/m1284p maxxir
+//LED1/PORTC.4/20 - m644p/m1284p maxxir brd
 #define led1_conf()      DDRC |= (1<<DDC4)
 #define led1_high()      PORTC |= (1<<PORTC4)
 #define led1_low()       PORTC &= ~(1<<PORTC4)
 #define led1_tgl()     PORTC ^= (1<<PORTC4)
 #define led1_read()     (PORTC & (1<<PORTC4))
+
+//LED2/PORTD.5/13 - m644p/m1284p maxxir brd
+#define led2_conf()      DDRD |= (1<<DDD5)
+#define led2_high()      PORTD |= (1<<PORTD5)
+#define led2_low()       PORTD &= ~(1<<PORTD5)
+#define led2_tgl()     PORTD ^= (1<<PORTD5)
+#define led2_read()     (PORTD & (1<<PORTD5))
 
 #define sw1_conf()      {DDRC &= ~(1<<DDC5); PORTC |= (1<<PORTC5);}
 #define sw1_read()     (PINC & (1<<PINC5))

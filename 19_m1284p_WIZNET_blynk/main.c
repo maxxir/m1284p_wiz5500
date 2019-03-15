@@ -65,6 +65,7 @@ uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS S
  * OK (v1.4)Analog Read/Write
  * OK (v1.5)Restore pins state on board reboot
  * OK ??3.Try fix frequent reconnection with blynk server - every ~22sec may be this OK.
+ * OK (v1.6) Add push event (P13/PD.5 toggle every 10 sec && send state P13 to BLYNK server)
  * Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
  *
  * (3) Trying WIZNET5500 init with using official Wiznet ioLibrary_Driver
@@ -100,7 +101,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.5 Static IP BLYNK WIZNET_5500 ETHERNET 14/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.6 Static IP BLYNK WIZNET_5500 ETHERNET 14/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -382,42 +383,12 @@ void IO_LIBRARY_Init(void) {
 }
 
 //***************** WIZCHIP INIT: END
-/*
-void spi_speed_tst(void)
-{
-	// Here on SPI pins: MOSI 400Khz freq out, on SCLK 3.2MhzOUT
-	while(1)
-	{
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-	}
-}
-*/
+
 int main()
 {
-	//uint8_t prev_sw1 = 1; // VAR for sw1 pressing detect
-
 	// INIT MCU
 	avr_init();
 	spi_init(); //SPI Master, MODE0, 4Mhz(DIV4), CS_PB.3=HIGH - suitable for WIZNET 5x00(1/2/5)
-	//spi_speed_tst(); / Here on SPI pins: MOSI 400Khz freq out, on SCLK 3.2MhzOUT (Witk SPI CLK 4Mhz)
 
 
 	// Print program metrics
@@ -499,6 +470,7 @@ int main()
 	// Test for Ethernet data transfer validation
 	uint32_t timer_tick_1sec = millis();
 	uint8_t blynk_restore_connection = 1;
+	uint8_t timer_led2_push_10sec = 0;
 	while(1)
 	{
 		//Here at least every 1sec
@@ -506,17 +478,7 @@ int main()
 		// Blynk process handler
 		blynk_run();
 
-		//Use Hercules Terminal to check loopback tcp:5000 and udp:3000
-		/*
-		 * https://www.hw-group.com/software/hercules-setup-utility
-		 * */
-		//loopback_tcps(SOCK_TCPS,ethBuf0,PORT_TCPS);
-		//loopback_udps(SOCK_UDPS,ethBuf0,PORT_UDPS);
-
-		//loopback_ret = loopback_tcpc(SOCK_TCPS, gDATABUF, destip, destport);
-		//if(loopback_ret < 0) printf("loopback ret: %ld\r\n", loopback_ret); // TCP Socket Error code
-
-		//Here every 1sec
+		//Here every 1sec event
 		if((millis()-timer_tick_1sec)> 1000)
 		{
 			//here every 1 sec
@@ -531,6 +493,14 @@ int main()
 					PRINTF("++blynk_syncAll event\r\n"); //Just for debug
 					blynk_syncAll();
 				}
+			}
+			//Every 10sec event for LED2 PIN13
+			if(++timer_led2_push_10sec == 10)
+			{
+				timer_led2_push_10sec = 0; //Clear timer_led2..
+				//Every 10sec toggle, and push LED2 PIN13/PD5 state to BLYNK server
+				led2_tgl();
+				blynk_push_pin(13);
 			}
 		}
 	}
@@ -588,6 +558,9 @@ static void avr_init(void)
 
 	led1_conf();
 	led1_low();// LED1 is OFF
+
+	led2_conf();
+	led2_low();//LED2 is OFF
 
 
 	sw1_conf();//SW1 internal pull-up
