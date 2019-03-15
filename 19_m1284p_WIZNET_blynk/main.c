@@ -56,7 +56,7 @@ uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS S
 //***************** DNS: END
 
 /*
- * (19)OK (v1.0) Trying port to WIZNET5500 BLYNK IOT app (look: https://blynk.io/)
+ * (19)OK (v1.0) Port from W5500_EVB(NXP LPc13xx + W5500) to AtMega1284p+W5500 BLYNK IOT app (look: https://blynk.io/)
  * TODO:
  * OK (v1.2) Add DNS resolve before BLYNK app running to <blynk-cloud.com>
  * OK (v1.1) Add LED_ON/LED_OFF handle on LED D13 BLYNK Android application
@@ -72,15 +72,8 @@ uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS S
  * OK (v1.7) Add push event to Virtual PIN1. Every 10sec push message: "Uptime: xxx sec", to BLYNK server (widget Terminal)
  * Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
  *
- * (3) Trying WIZNET5500 init with using official Wiznet ioLibrary_Driver
- * working ping, assign static IP
- * LED1 = ON when phy_link detected
- * and loopback test on TCP-IP:5000 and UDP:3000 ports.
- * use Hercules terminal utility to check network connection see:
- *
- * https://wizwiki.net/wiki/doku.php?id=osh:cookie:loopback_test
- * https://www.hw-group.com/software/hercules-setup-utility
- *
+ * Author of porting to AVR Mega:
+ * Ibragimov Maxim aka maxxir, Russia Togliatty ~xx.03.2019
  */
 
 //***********Prologue for fast WDT disable & and save reason of reset/power-up: END
