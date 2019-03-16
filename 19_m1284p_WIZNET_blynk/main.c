@@ -49,7 +49,7 @@ unsigned char gDATABUF_DNS[512];
 ////////////////
 // DNS client //
 ////////////////
-uint8_t Domain_name[] = BLYNK_DEFAULT_DOMAIN;    		// Public russian ntp server - works good via GSM Modem
+uint8_t Domain_name[] = BLYNK_DEFAULT_DOMAIN;    	// BLYNK server URI
 uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS Server
 //***************** DNS: END
 
