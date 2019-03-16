@@ -1,4 +1,4 @@
-# Port from W5500_EVB to AtMega1284p+W5500 IOT Blynk application
+# AtMega1284p+W5500 IOT Blynk application
 
 I’ve made porting from W5500_EVB(NXP LPC13xx + W5500) to AtMega1284p+W5500 custom board.
 This is NO Arduino. Used C language project with WIZNET native sockets API , only for experienced programmers.
