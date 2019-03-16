@@ -4,6 +4,32 @@
  *  Created on: 22 нояб. 2018 г.
  *      Author: maxx
  */
+
+/*
+ * (19)OK (v1.0) Port from W5500_EVB(NXP LPc13xx + W5500) to AtMega1284p+W5500 BLYNK IOT app (look: https://blynk.io/)
+ * TODO:
+ * OK (v1.2) Add DNS resolve before BLYNK app running to <blynk-cloud.com>
+ * OK (v1.1) Add LED_ON/LED_OFF handle on LED D13 BLYNK Android application
+ *  GPIO OUT  - works OK (look ./Application/Blynk/blynkDependency.c digitalWrite(..) && pinMode(..))!
+ * OK(v1.2) Add printout <blynk> server metrics on start-up
+ * Need to try next:
+ * OK (v1.3)GPIO IN - fixed bug (remove redundant space symbol in <dw xx xx >)
+ * OK Virtual IN/OUT - virtual pin push message see below (1.7)
+ * OK (v1.4)Analog Read/Write
+ * OK (v1.5)Restore pins state on board reboot
+ * OK (v1.6) Add push event (P13/PD.5 toggle every 10 sec && send state P13 to BLYNK server)
+ * OK (v1.7) Add push event to Virtual PIN1. Every 10sec push message: "Uptime: xxx sec", to BLYNK server (widget Terminal)
+ * OK (v1.8) Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
+ * OK (v1.8) Made fix correction blynk.h/blynk.c 16.02.2019 to match BLYNK protocol 0.6.0
+ *
+ * PS.
+ * Further correction of the code from MBED authors (Vladimir Shimansky, Dmitriy Dumanskiy ..) is highly desirable.
+ * Because I'm not the author of mbed libs. And I do not quite well understand how this should work in their opinion.
+ *
+ * Author of unofficial porting to AVR Mega1284p/644p + W5500 Ethernet NIC (Wiznet sockets library using without Arduino):
+ * Ibragimov Maxim aka maxxir, Russia Togliatty ~xx.03.2019
+ */
+
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -53,30 +79,6 @@ uint8_t Domain_name[] = BLYNK_DEFAULT_DOMAIN;    	// BLYNK server URI
 uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS Server
 //***************** DNS: END
 
-/*
- * (19)OK (v1.0) Port from W5500_EVB(NXP LPc13xx + W5500) to AtMega1284p+W5500 BLYNK IOT app (look: https://blynk.io/)
- * TODO:
- * OK (v1.2) Add DNS resolve before BLYNK app running to <blynk-cloud.com>
- * OK (v1.1) Add LED_ON/LED_OFF handle on LED D13 BLYNK Android application
- *  GPIO OUT  - works OK (look ./Application/Blynk/blynkDependency.c digitalWrite(..) && pinMode(..))!
- * OK(v1.2) Add printout <blynk> server metrics on start-up
- * Need to try next:
- * OK (v1.3)GPIO IN - fixed bug (remove redundant space symbol in <dw xx xx >)
- * OK Virtual IN/OUT - virtual pin push message see below (1.7)
- * OK (v1.4)Analog Read/Write
- * OK (v1.5)Restore pins state on board reboot
- * OK (v1.6) Add push event (P13/PD.5 toggle every 10 sec && send state P13 to BLYNK server)
- * OK (v1.7) Add push event to Virtual PIN1. Every 10sec push message: "Uptime: xxx sec", to BLYNK server (widget Terminal)
- * OK (v1.8) Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
- * OK (v1.8) Made fix correction blynk.h/blynk.c 16.02.2019 to match BLYNK protocol 0.6.0
- *
- * PS.
- * Further correction of the code from MBED authors (Vladimir Shimansky, Dmitriy Dumanskiy ..) is highly desirable.
- * Because I'm not the author of mbed libs. And I do not quite well understand how this should work in their opinion.
- *
- * Author of unofficial porting to AVR Mega1284p/644p + W5500 Ethernet NIC (Wiznet sockets library using without Arduino):
- * Ibragimov Maxim aka maxxir, Russia Togliatty ~xx.03.2019
- */
 
 //***********Prologue for fast WDT disable & and save reason of reset/power-up: END
 uint8_t mcucsr_mirror __attribute__ ((section (".noinit")));

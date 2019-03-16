@@ -11,4 +11,4 @@ because original W5500_EVB project based on BLYNK 0.2.1.
 
 Tested and worked:
 
-GPIO IN-OUT, Analog READ-WRITE, PUSH values, PUSH messages.
+GPIO IN-OUT, Analog READ-WRITE, Virtual IN-OUT, PUSH values, PUSH messages, blynk_syncAll().
