@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name M644_breakout_v1.2d-eagle-import)(type Legacy)(uri ${KIPRJMOD}/M644_breakout_v1.2d-eagle-import.lib)(options "")(descr ""))
+)
