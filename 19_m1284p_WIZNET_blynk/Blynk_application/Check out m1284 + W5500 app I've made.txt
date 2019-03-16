@@ -1,0 +1,8 @@
+Hey,
+
+I've made m1284 + W5500 app. You are welcome to try it out!
+
+To start using it:
+1. Download Blynk App: http://j.mp/blynk_Android or http://j.mp/blynk_iOS
+2. Touch the QR-code icon and point the camera to the code below
+3. Enjoy my app!
