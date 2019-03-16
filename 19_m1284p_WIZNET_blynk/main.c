@@ -26,7 +26,7 @@
 
 //***********BLYNK related: BEGIN
 #define SOCK_BLYNK_CLIENT		6
-//My auth token for my android test application GENERIC+W5500:
+//My auth token for my android test application "m1284 + W5500":
 uint8_t auth[] = "c113f724351444fc872ae586d70b18cd";	// You should get your own Auth Token in the BLYNK App
 
 // Shouldn't used here, because used DNS resolving BLYNK server IP
@@ -69,9 +69,14 @@ uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS S
  * OK (v1.5)Restore pins state on board reboot
  * OK (v1.6) Add push event (P13/PD.5 toggle every 10 sec && send state P13 to BLYNK server)
  * OK (v1.7) Add push event to Virtual PIN1. Every 10sec push message: "Uptime: xxx sec", to BLYNK server (widget Terminal)
- * Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
+ * OK (v1.8) Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
+ * OK (v1.8) Made fix correction blynk.h/blynk.c 16.02.2019 to match BLYNK protocol 0.6.0
  *
- * Author of porting to AVR Mega:
+ * PS.
+ * Further correction of the code from MBED authors (Vladimir Shimansky, Dmitriy Dumanskiy ..) is highly desirable.
+ * Because I'm not the author of mbed libs. And I do not quite well understand how this should work in their opinion.
+ *
+ * Author of unofficial porting to AVR Mega1284p/644p + W5500 Ethernet NIC (Wiznet sockets library using without Arduino):
  * Ibragimov Maxim aka maxxir, Russia Togliatty ~xx.03.2019
  */
 
@@ -97,7 +102,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.7a Static IP BLYNK WIZNET_5500 ETHERNET 15/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.8 Static IP BLYNK WIZNET_5500 ETHERNET 16/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -172,7 +177,7 @@ unsigned long millis(void)
 #define UART_BAUD_RATE      115200
 
 static int uart0_putchar(char ch,FILE *stream);
-static void uart0_rx_flash(void);
+//static void uart0_rx_flash(void);
 
 static FILE uart0_stdout = FDEV_SETUP_STREAM(uart0_putchar, NULL, _FDEV_SETUP_WRITE);
 //PS. stdin не переназначаю, т.к. удобнее с ним работать через uart.h - api:
@@ -197,6 +202,7 @@ static int uart0_putchar(char ch,FILE *stream)
 }
 
 // Очищаем буфер приема UART1 RX (иногда нужно)
+/*
 static void uart0_rx_flash(void)
 {
 	// Считываем все из ring-buffer UART1 RX
@@ -207,6 +213,7 @@ static void uart0_rx_flash(void)
 	} while (( c & UART_NO_DATA ) == 0); // Check RX1 none-empty
 
 }
+*/
 //***************** UART0: END
 
 //***************** ADC: BEGIN

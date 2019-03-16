@@ -44,6 +44,8 @@ static uint16_t ATOI(uint8_t * str, uint8_t base);
 static uint8_t C2D(uint8_t c);
 static void replacetonull(uint8_t * str, uint8_t c);
 
+static void printBanner();
+
 uint8_t * 	authkey;
 uint32_t	lastActivityIn;
 uint32_t	lastActivityOut;
@@ -120,7 +122,9 @@ void blynk_run(void)
 #ifdef BLYNK_DEBUG
 						PRINTF("Blynk[%d] : Auth connection complete\r\n", s);
 #endif
+						printBanner();
 					}
+
 			}
 
 			if(blynk_connection_available > 0) processInput();
@@ -230,7 +234,8 @@ uint8_t blynk_connect(void)
     //////////////////////////////////////////////////////////////////////////////////
 	if (BLYNK_CMD_RESPONSE != hdr.type ||
 		id != hdr.msg_id ||
-		(BLYNK_SUCCESS != hdr.length && BLYNK_ALREADY_LOGGED_IN != hdr.length))
+		//(BLYNK_SUCCESS != hdr.length && BLYNK_ALREADY_LOGGED_IN != hdr.length)) Deprecated on BLYNK_VERSION 0.6.0
+		(BLYNK_SUCCESS != hdr.length && BLYNK_ILLEGAL_COMMAND_BODY != hdr.length))
 	{
 		if (BLYNK_TIMEOUT == hdr.length)
 		{
@@ -294,7 +299,7 @@ void processInput(void)
 	{
 		case BLYNK_CMD_RESPONSE:
 		{
-			if (BLYNK_NO_LOGIN == hdr.length)
+			if (BLYNK_NOT_AUTHENTICATED == hdr.length)
 			{
 				disconnect(s);
 				return;
@@ -339,7 +344,17 @@ void processInput(void)
 			processCmd(msgbuf, hdr.length);
 			currentMsgId = 0;
 		} break;
+//!!  On BLYNK_VERSION 0.6.0 also present (look BlynkProtocol.h bool BlynkProtocol<Transp>::processInput(void)):
+		/*
+		 *
+		case BLYNK_CMD_LOGIN: {..
 
+		case BLYNK_CMD_REDIRECT: {..
+
+    	case BLYNK_CMD_INTERNAL: {..
+
+		case BLYNK_CMD_DEBUG_PRINT: {..
+		 */
 		default:
 			PRINTF("Invalid header type: %d\r\n", hdr.type);
 			disconnect(s);
@@ -411,6 +426,11 @@ void processCmd(uint8_t * buff, size_t len)
 #ifdef BLYNK_INFO_CONNECTION
 				 BLYNK_PARAM_KV("con"    , BLYNK_INFO_CONNECTION)
 #endif
+#ifdef BOARD_FIRMWARE_VERSION
+        BLYNK_PARAM_KV("fw"     , BOARD_FIRMWARE_VERSION)
+#endif
+        BLYNK_PARAM_KV("build"  , __DATE__ " " __TIME__)
+        "\0"
 				 ;
 		 const size_t profile_len = sizeof(profile)-1;
 
@@ -785,6 +805,19 @@ void blynk_push_pin(uint8_t pin)
 }
 
 /*
+ * Sends integer value to a Virtual Pin
+ */
+void blynk_push_virtual_pin(uint8_t pin)
+{
+	uint8_t rsp_mem[16];
+	uint16_t rsp_len;
+	memset(rsp_mem, 0, sizeof(rsp_mem));
+	rsp_len = SPRINTF((char *)rsp_mem, "vw %d %d", pin, virtualRead(pin));
+	replacetonull(rsp_mem, ' ');
+	sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len, NULL, 0);
+}
+
+/*
  * Sends buffer (string message for example) to a Virtual Pin
  */
 void blynk_push_virtual_pin_msg(uint8_t pin, uint8_t * data)
@@ -797,4 +830,22 @@ void blynk_push_virtual_pin_msg(uint8_t pin, uint8_t * data)
 	sendCmd(BLYNK_CMD_HARDWARE, 0, rsp_mem, rsp_len+1, data, strlen(data));
 }
 
+void BLYNK_LOG_TIME() {
+    PRINTF(BLYNK_NEWLINE "[%lu] ", millis());
+}
+#define BLYNK_LOG1(p1)            { BLYNK_LOG_TIME(); PRINTF(p1); }
+
+static void printBanner() {
+#if defined(BLYNK_NO_FANCY_LOGO)
+    BLYNK_LOG1(BLYNK_F("Blynk v" BLYNK_VERSION " on " BLYNK_INFO_DEVICE));
+#else
+    BLYNK_LOG1(BLYNK_NEWLINE
+        "    ___  __          __" BLYNK_NEWLINE
+        "   / _ )/ /_ _____  / /__" BLYNK_NEWLINE
+        "  / _  / / // / _ \\/  '_/" BLYNK_NEWLINE
+        " /____/_/\\_, /_//_/_/\\_\\" BLYNK_NEWLINE
+        "        /___/ v" BLYNK_VERSION " on " BLYNK_INFO_DEVICE BLYNK_NEWLINE
+    );
+#endif
+}
 
