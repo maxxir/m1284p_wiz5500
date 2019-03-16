@@ -26,3 +26,5 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
 		.dhcp = NETINFO_STATIC};    //Static IP configuration
 #endif
 
+//My auth token for my android test application "m1284 + W5500":
+uint8_t auth[] = "add_your_own_token_here";	// You should get your own Auth Token in the BLYNK App

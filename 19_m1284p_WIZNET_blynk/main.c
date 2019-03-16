@@ -26,8 +26,6 @@
 
 //***********BLYNK related: BEGIN
 #define SOCK_BLYNK_CLIENT		6
-//My auth token for my android test application "m1284 + W5500":
-uint8_t auth[] = "c113f724351444fc872ae586d70b18cd";	// You should get your own Auth Token in the BLYNK App
 
 // Shouldn't used here, because used DNS resolving BLYNK server IP
 // IP: 139.59.206.133 for <blynk-cloud.com> via WIN7 nslookup - actually need to use DNS resolving
