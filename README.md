@@ -19,7 +19,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 
 ## Software part. What done ( In order of increasing complexity )
 
-* [Wiznet Loopback TCP/UDP Static IP](https://github.com/maxxir/m1284p_wiz5500/tree/master/03_m1284p_WIZNET_loopback_STATIC_IP)
+* [Wiznet Loopback TCP/UDP Static IP](../master/03_m1284p_WIZNET_loopback_STATIC_IP/)
 
 
 
