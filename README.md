@@ -28,7 +28,15 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 5. [Telnet server example](../master/07_m1284p_WIZNET_telnets_basic/)
 6. [ICMP aka ping example](../master/08_m1284p_WIZNET_ICMP_aka_ping/)
 7. [Simple Web Server (one page with HTTP POST/GET queries)](../master/09_m1284p_WIZNET_simple_webserver/)
-8. [?](../master//)
+8. [HTTPD Web Server with all contents in AVR FLASH (with AJAX queries)](../master/11_m1284p_WIZNET_HTTPServer_FLASH_pages/)
+9. [?](../master//)
+10. [?](../master//)
+11. [?](../master//)
+12. [?](../master//)
+13. [?](../master//)
+14. [?](../master//)
+15. [?](../master//)
+16. [?](../master//)
 
 
 ### TODO:  Add all other links here
@@ -38,5 +46,5 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 ## Remarks:
 
 ## Author porting to AVR m1284p/m644p
-* **Ibragimov Maksim** *aka* **maxxir**
+* **Ibragimov Maksim** aka **maxxir**
 
