@@ -36,7 +36,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 13. ZEVERO SD PetitFS Bootloader for both [M1284p](../master/bootloader_zevero_sd_m1284p_make/)/[M644p](../master/bootloader_zevero_sd_m644p_make/)
 14. Bootloaded code: Combined Wiznet Loopback TCP/UDP Static IP + FTPD server (for bootloading via FTP client) + SD-bootloader ZEVERO, working on [M644p](../master/18_m644p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)/[M1284p](../master/18_m1284p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)
 15. [Bootloaded code: Combined HTTPD server (with AJAX) + FTPD server (for bootloading via FTP client and upload WEB server contents)(with AJAX queries) + SD-bootloader ZEVERO, working on M1284p only](../master/17_m1284p_BTLD_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
-16. [?](../master//)
+16. [IOT Blynk client Example with Blynk smartphone application (checked only Android side) - NO Arduino CODE, used Wiznet Sockets](../master/19_m1284p_WIZNET_blynk/)
 
 
 ### TODO:  Add all other links here
