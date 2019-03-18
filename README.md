@@ -42,7 +42,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 
 #### Blynk application screenshot:
 
-<img src="../master/KiCad_M644_breakout_v1.2d/Pictures/Screenshot_2019-03-18-13-37-20-278_cc.blynk.png" alt="Blynk application" width="50%" height="50%">
+<img src="../master/19_m1284p_WIZNET_blynk/Blynk_application/Screenshot_2019-03-18-13-37-20-278_cc.blynk.png" alt="Blynk application" width="50%" height="50%">
 
 ### TODO:  Add all other links here
 
