@@ -31,5 +31,6 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 
 ## Remarks:
 
-
+## Author
+* **Ibragimov Maksim** - *aka maxxir*
 
