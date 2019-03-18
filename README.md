@@ -10,7 +10,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 
 ### This is my own m644p/m1284p custom board looks like:
 
-![Optional Text](../blob/master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_top.png)
+![Optional Text](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_top.png)
 
 ### Tested system photo:
 
