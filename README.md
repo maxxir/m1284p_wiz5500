@@ -32,7 +32,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 9. [HTTPD Web Server with all content on SD card (Chang FAT FS lib using) (with AJAX queries)](../master/12_m1284p_WIZNET_HTTPServer_SDCARD_pages/)
 10. [FTPC example (only active mode sorry) with store content on SD card (console dialog from serial terminal like putty..)](../master/14_m1284p_WIZNET_FTPC_FATFS/)
 11. [FTPD example (both active-passive modes working) with store content on SD card, checked on FTP clients: Windows 7 cmd, Total commander, WinSCP.](../master/15_m1284p_WIZNET_FTPD_FATFS/)
-12. [?](../master//)
+12. [Combined HTTPD + FTPD for  dynamic upload WEB server contents, with all content on SD card (Chang FAT FS lib using) (with AJAX queries)](../master/16_m1284p_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
 13. [?](../master//)
 14. [?](../master//)
 15. [?](../master//)
