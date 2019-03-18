@@ -48,6 +48,10 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 
 ## What TODO:
 
+17. Bootloaded code: IOT BLYNK client combined with FTPD server (for bootloading via FTP client)+ SD-bootloader ZEVERO
+18. TFTP client
+19. MQTT client
+
 ## Remarks:
 
 ## Author porting to AVR m1284p/m644p
