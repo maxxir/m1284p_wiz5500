@@ -1,0 +1,93 @@
+7. Для AVR-Eclipse допустим загрузил проект, хочу поменять ключи в <00_m1284p_blink_make/Makefile>, но чтобы они не уходили назад
+при PUSH'e на сервер (т.е. я работал со своей локальной копией):
+
+(Команду даем из консоли GIT из корня локального репозитария)
+git update-index --assume-unchanged 00_m1284p_blink_make/Makefile
+
+Все далее спойкойно редактируем <Makefile>
+При работе в другой локальной копии (на другой машине) эту команду надо давать снова.
+
+8. Для AVR-Eclipse (почти тоже что и (7)), после редактирования <Makefile> сделал Targets->Build->program
+(Делаю прошивку программатором через Makefile).
+
+(Команду даем из консоли GIT из корня локального репозитария)
+git update-index --assume-unchanged 00_m1284p_blink_make/.cproject
+
+Все далее спойкойно редактируем <Makefile>
+При работе в другой локальной копии (на другой машине) эту команду надо давать снова.
+
+9. Это же нужно сделать с файлами globals.h, globals.c
+git update-index --assume-unchanged globals.h
+git update-index --assume-unchanged globals.c
+
+Возвращаем их обновление назад:
+git update-index --no-assume-unchanged globals.h
+git update-index --no-assume-unchanged globals.c
+
+
+В общем виде:
+
+    Ignoring versioned files
+
+    Some files in a repository change often but are rarely committed. Usually, these are various local configuration files that are edited, but should never be committed upstream. Git lets you ignore those files by assuming they are unchanged.
+
+        In Terminal, navigate to the location of your Git repository.
+        Run the following command in your terminal:
+
+    git update-index --assume-unchanged path/to/file.txt
+
+    Once you mark a file like this, Git completely ignores any changes on it. It will never show up when running git status or git diff, nor will it ever be committed.
+
+    To make Git track the file again, simply run:
+
+    git update-index --no-assume-unchanged path/to/file.txt.
+
+10. Чтобы видеть какие файлы в репозитарии "--assume-unchanged" (т.е. полагаются не изменяемыми, те. локальная копия не заносится в глобальный репозитарий при Commit, !! но наоборот обновляется из глобального при Pull !!):
+git ls-files -v
+При этом: те которые начинаются на h (строчную букву) и есть "--assume-unchanged"
+
+git ls-files -v
+
+Вывод:
+H Internet/DNS/dns.c
+H Internet/DNS/dns.h
+H README.md
+h globals.c << это "--assume-unchanged"
+H main.c
+H spi.c
+H spi.h
+H uart_extd.c
+H uart_extd.h
+
+
+Или (работает в GIT command console Win7, и Linux):
+
+git ls-files -v | grep -e "^[a-z]"
+
+Или (только для Win7 cmd используется Win cmd "findstr"):
+git ls-files -v | findstr /B h
+
+Вывод:
+#git ls-files -v | grep -e "^[a-z]"
+h globals.c
+
+Отсюда:
+https://stackoverflow.com/questions/2363197/can-i-get-a-list-of-files-marked-assume-unchanged
+
+11. Чтобы видеть какие файлы в репозитарии являются игнорируемыми "--ignored":
+git status -s --ignored | grep "^!!"
+
+Вывод:
+
+!! Ethernet/Socket_APIs_V3.0.3.chm
+!! Ethernet/W5100/
+!! Ethernet/W5100S/
+!! Ethernet/W5200/
+!! Ethernet/W5300/
+!! Release/
+!! ../bootloader_zevero_sd_m1284p_make/.settings/
+!! ../bootloader_zevero_sd_m644p_make/.settings/
+
+Отсюда:
+https://stackoverflow.com/questions/2363197/can-i-get-a-list-of-files-marked-assume-unchanged
+
