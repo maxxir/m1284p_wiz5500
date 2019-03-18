@@ -58,6 +58,8 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 * [m1284P Board pinmap](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_pinmap.png/)
 * [Blynk IOT Application QR-code](../master/19_m1284p_WIZNET_blynk/Blynk_application/app1_m1284p_and_W5500_QR.png/)
 
+[>>hardware and Software parts discussion your are welcome here.](https://www.avrfreaks.net/forum/need-w5500-example-c-tcp)
+
 
 ## Author porting to AVR m1284p/m644p
 * **Ibragimov Maksim** aka **maxxir**
