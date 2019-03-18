@@ -6,4 +6,6 @@ Based on W5500 EVB examples, but heavily modified.
 
 Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 
-##
+##What done ( In order of increasing complexity ):
+
+1. Wiznet Loopback TCP/UDP Static IP
