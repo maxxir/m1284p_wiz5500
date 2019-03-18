@@ -26,6 +26,10 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 3. [DNS example](../master/05_m1284p_WIZNET_DNS_client/)
 4. [SNTP + DNS example](../master/06_m1284p_WIZNET_DNS_SNTP_client/)
 5. [Telnet server example](../master/07_m1284p_WIZNET_telnets_basic/)
+6. [ICMP aka ping example](../master/08_m1284p_WIZNET_ICMP_aka_ping/)
+7. [Simple Web Server (one page with HTTP POST/GET queries)](../master/09_m1284p_WIZNET_simple_webserver/)
+8. [?](../master//)
+
 
 ### TODO:  Add all other links here
 
