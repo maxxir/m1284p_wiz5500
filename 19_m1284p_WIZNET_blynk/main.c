@@ -27,7 +27,7 @@
  * 			 using push events && on change state flags
  * PS.
  * Further correction, or advices about the code from BLYNK authors (Vladimir Shimansky, Dmitriy Dumanskiy ..) is highly desirable.
- * Because I'm not the author of blynk libs. And I do not quite well understand how this should work in right manner.
+ * Because I'm not the author of BLYNK libs. And I don't quite understand how this should work in the right manner.
  *
  * Author of unofficial porting to AVR Mega1284p/644p + W5500 Ethernet NIC (Wiznet sockets library using without Arduino):
  * Ibragimov Maxim aka maxxir, Russia Togliatty ~xx.03.2019
