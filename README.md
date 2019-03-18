@@ -57,6 +57,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 * [Blynk IOT Application QR-code](../master/19_m1284p_WIZNET_blynk/Blynk_application/app1_m1284p_and_W5500_QR.png/)
 
 [>>Hardware and Software parts (no Blynk) discussion your are welcome here..](https://www.avrfreaks.net/forum/need-w5500-example-c-tcp)
+
 [>>Blynk part discussion your are welcome here..](https://community.blynk.cc/t/port-from-w5500-evb-to-atmega1284p-w5500-wiznet-sockets-library-without-arduino/35235)
 
 
