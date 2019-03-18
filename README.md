@@ -31,6 +31,6 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 
 ## Remarks:
 
-## Author
+## Author porting to AVR m1284p/m644p
 * **Ibragimov Maksim** *aka* **maxxir**
 
