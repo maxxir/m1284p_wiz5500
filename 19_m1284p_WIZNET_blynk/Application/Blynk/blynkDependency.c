@@ -60,6 +60,8 @@ void digitalWrite(uint8_t pin, uint8_t val)
 		{
 			led1_high();
 		}
+		//Rise flag to PUSH message to Virtual pin 20
+		v20_changed = 1;
 	}
 #endif
 }
@@ -104,6 +106,8 @@ void analogWrite(uint8_t pin, uint8_t val)
 	if(pin == 15)
 	{
 		OCR2A = val;
+		//Rise flag to PUSH message to Virtual pin 15
+		v15_changed = 1;
 	}
 #endif
 }
@@ -151,13 +155,23 @@ uint16_t virtualRead(uint8_t pin)
 	{
 		//Digital read example from Virtual Pin 13
 		val = led2_read()?1:0;
-		PRINTF("LED2 is: %d %s\r\n", val, val?"HIGH":"LOW");
+		//PRINTF("LED2 is: %d %s\r\n", val, val?"HIGH":"LOW");
 	}
 	else if(pin == 6)
 	{
 		//Analog read example from Virtual Pin 6
 		val = adc_read(6);
-		PRINTF("analog pin %d = %d\r\n", pin, val);
+		//PRINTF("analog pin %d = %d\r\n", pin, val);
+	}
+	else if(pin == 15)
+	{
+		//PWM Value PIN15/PD7
+		val = (uint16_t)OCR2A;
+	}
+	else if(pin == 20)
+	{
+		//Digital OUT Value PIN20/PC4
+		val = led1_read()?1:0;
 	}
 	return val;
 }

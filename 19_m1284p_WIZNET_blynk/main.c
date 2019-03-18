@@ -21,10 +21,13 @@
  * OK (v1.7) Add push event to Virtual PIN1. Every 10sec push message: "Uptime: xxx sec", to BLYNK server (widget Terminal)
  * OK (v1.8) Need compare local blynk.c code with modern <blynk> library - (Too old version here - 0.2.1 (On git blynk March 2019 - 0.6.x) )
  * OK (v1.8) Made fix correction blynk.h/blynk.c 16.02.2019 to match BLYNK protocol 0.6.0
- *
+ * OK (v1.9) Two feedback examples from:
+ * 			 D20/PC4(digitalWrite(20))->V20(virtualRead(20))
+ * 			 PWM D15/PD7(analogWrite(15))->V15(virtualRead(15))
+ * 			 using push events && on change state flags
  * PS.
- * Further correction of the code from MBED authors (Vladimir Shimansky, Dmitriy Dumanskiy ..) is highly desirable.
- * Because I'm not the author of mbed libs. And I do not quite well understand how this should work in their opinion.
+ * Further correction, or advices about the code from BLYNK authors (Vladimir Shimansky, Dmitriy Dumanskiy ..) is highly desirable.
+ * Because I'm not the author of blynk libs. And I do not quite well understand how this should work in right manner.
  *
  * Author of unofficial porting to AVR Mega1284p/644p + W5500 Ethernet NIC (Wiznet sockets library using without Arduino):
  * Ibragimov Maxim aka maxxir, Russia Togliatty ~xx.03.2019
@@ -61,6 +64,10 @@
 
 uint8_t BLYNK_TX_BUF[BLYNK_DATA_BUF_SIZE];
 
+//BLYNK Virtual pins state changed flags
+uint8_t v15_changed;
+uint8_t v20_changed;
+
 //***********BLYNK related: END
 
 //***************** DNS: BEGIN
@@ -79,8 +86,7 @@ uint8_t Domain_name[] = BLYNK_DEFAULT_DOMAIN;    	// BLYNK server URI
 uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS Server
 //***************** DNS: END
 
-
-//***********Prologue for fast WDT disable & and save reason of reset/power-up: END
+//***********Prologue for fast WDT disable & and save reason of reset/power-up: BEGIN
 uint8_t mcucsr_mirror __attribute__ ((section (".noinit")));
 
 // This is for fast WDT disable & and save reason of reset/power-up
@@ -102,7 +108,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.8 Static IP BLYNK WIZNET_5500 ETHERNET 16/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.9 Static IP BLYNK WIZNET_5500 ETHERNET 18/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -393,6 +399,9 @@ int main()
 	avr_init();
 	spi_init(); //SPI Master, MODE0, 4Mhz(DIV4), CS_PB.3=HIGH - suitable for WIZNET 5x00(1/2/5)
 
+	//Bullet proof: clear Virtual pins state change flags
+	v15_changed = 0;
+	v20_changed = 0;
 
 	// Print program metrics
 	PRINTF("%S", str_prog_name);// Название программы
@@ -497,6 +506,21 @@ int main()
 					PRINTF("++blynk_syncAll event\r\n"); //Just for debug
 					blynk_syncAll();
 				}
+			}
+
+			//Virtual pins state change check here
+			if(v15_changed)
+			{
+				v15_changed = 0; //Drop flag
+				//Push message with changed V15 value (LED PWM PIN15/PD7 )
+				blynk_push_virtual_pin(15);
+
+			}
+			else if(v20_changed)
+			{
+				v20_changed = 0; //Drop flag
+				//Push message with changed V20 value (LED1 D20/PC4)
+				blynk_push_virtual_pin(20);
 			}
 			//Every 10sec event for LED2 PIN13, and uptime device
 			if(++timer_led2_push_10sec == 10)

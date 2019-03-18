@@ -33,7 +33,6 @@
 								<option id="de.innot.avreclipse.compiler.option.incpath.478254702" name="Include Paths (-I)" superClass="de.innot.avreclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Ethernet}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Ethernet/W5500}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Application/loopback}&quot;"/>
 								</option>
 								<inputType id="de.innot.avreclipse.compiler.winavr.input.167604838" name="C Source Files" superClass="de.innot.avreclipse.compiler.winavr.input"/>
 							</tool>

@@ -74,4 +74,6 @@ extern uint8_t DNS_2nd[4];
 
 extern uint16_t adc_read(uint8_t channel);
 extern uint8_t auth[];
+extern uint8_t v15_changed;
+extern uint8_t v20_changed;
 #endif /* GLOBALS_H_ */
