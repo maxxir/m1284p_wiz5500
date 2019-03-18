@@ -73,5 +73,5 @@ extern uint8_t DNS_2nd[4];
 #define BLYNK_DATA_BUF_SIZE 1024
 
 extern uint16_t adc_read(uint8_t channel);
-
+extern uint8_t auth[];
 #endif /* GLOBALS_H_ */
