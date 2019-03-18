@@ -18,4 +18,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 
 ## Software part. What done ( In order of increasing complexity )
 
-1. Wiznet Loopback TCP/UDP Static IP
+```
+* [Wiznet Loopback TCP/UDP Static IP]
+```
+
