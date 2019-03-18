@@ -53,7 +53,11 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 19. MQTT client
 
 ## Remarks:
+* [m1284P schematic](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_schematic.png/)
+* [m1284P typical connection diagram](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_connection_schematic.png/)
+* [m1284P Board pinmap](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_pinmap.png/)
+* [Blynk IOT Application QR-code](../master/19_m1284p_WIZNET_blynk/Blynk_application/app1_m1284p_and_W5500_QR.png/)
+
 
 ## Author porting to AVR m1284p/m644p
 * **Ibragimov Maksim** aka **maxxir**
-
