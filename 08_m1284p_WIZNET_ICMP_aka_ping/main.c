@@ -76,6 +76,21 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
 		.dhcp = NETINFO_STATIC};    //Static IP configuration
 #endif
 
+//***********Prologue for fast WDT disable & and save reason of reset/power-up: BEGIN
+uint8_t mcucsr_mirror __attribute__ ((section (".noinit")));
+
+// This is for fast WDT disable & and save reason of reset/power-up
+void get_mcusr(void) \
+  __attribute__((naked)) \
+  __attribute__((section(".init3")));
+void get_mcusr(void)
+{
+  mcucsr_mirror = MCUSR;
+  MCUSR = 0;
+  wdt_disable();
+}
+//***********Prologue for fast WDT disable & and save reason of reset/power-up: END
+
 //*********Global vars
 #define TICK_PER_SEC 1000UL
 volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days

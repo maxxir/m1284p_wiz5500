@@ -35,7 +35,7 @@
  *
  */
 
-//***********Prologue for fast WDT disable & and save reason of reset/power-up: END
+//***********Prologue for fast WDT disable & and save reason of reset/power-up: BEGIN
 uint8_t mcucsr_mirror __attribute__ ((section (".noinit")));
 
 // This is for fast WDT disable & and save reason of reset/power-up

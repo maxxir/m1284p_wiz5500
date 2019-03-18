@@ -19,6 +19,20 @@
 #include "Internet/DHCP/dhcp.h"
 #include "Application/loopback/loopback.h"
 
+//***********Prologue for fast WDT disable & and save reason of reset/power-up: BEGIN
+uint8_t mcucsr_mirror __attribute__ ((section (".noinit")));
+
+// This is for fast WDT disable & and save reason of reset/power-up
+void get_mcusr(void) \
+  __attribute__((naked)) \
+  __attribute__((section(".init3")));
+void get_mcusr(void)
+{
+  mcucsr_mirror = MCUSR;
+  MCUSR = 0;
+  wdt_disable();
+}
+//***********Prologue for fast WDT disable & and save reason of reset/power-up: END
 
 //#include <stdlib.h> // itoa etc..
 /*

@@ -147,7 +147,7 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
  * Ibragimov Maxim, Russia Togliatty ~10..12.2018
  */
 
-//***********Prologue for fast WDT disable & and save reason of reset/power-up: END
+//***********Prologue for fast WDT disable & and save reason of reset/power-up: BEGIN
 uint8_t mcucsr_mirror __attribute__ ((section (".noinit")));
 
 // This is for fast WDT disable & and save reason of reset/power-up

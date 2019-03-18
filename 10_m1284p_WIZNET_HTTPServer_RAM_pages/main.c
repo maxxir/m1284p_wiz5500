@@ -63,6 +63,21 @@
  *
  */
 
+//***********Prologue for fast WDT disable & and save reason of reset/power-up: BEGIN
+uint8_t mcucsr_mirror __attribute__ ((section (".noinit")));
+
+// This is for fast WDT disable & and save reason of reset/power-up
+void get_mcusr(void) \
+  __attribute__((naked)) \
+  __attribute__((section(".init3")));
+void get_mcusr(void)
+{
+  mcucsr_mirror = MCUSR;
+  MCUSR = 0;
+  wdt_disable();
+}
+//***********Prologue for fast WDT disable & and save reason of reset/power-up: END
+
 #ifdef IP_WORK
 //NIC metrics for WORK PC
 wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address

@@ -149,6 +149,7 @@ int xatoi (			/* 0:Failed, 1:Successful */
 
 //************************* Fat FS declare related: END
 
+//***********Prologue for fast WDT disable & and save reason of reset/power-up: BEGIN
 uint8_t mcucsr_mirror __attribute__ ((section (".noinit")));
 
 // This is for fast WDT disable & and save reason of reset/power-up
