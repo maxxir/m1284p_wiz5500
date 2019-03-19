@@ -2,7 +2,7 @@
 
 *На других языках: [English](README.md), [Русский](README.ru.md).*
 
-Множество проектов использующих ATMEGA 1284p(644p не все примеры) and Ethernet контроллер Wiznet 5500.
+Множество проектов использующих ATMEGA 1284p(на 644p работают не все примеры т.к. мало RAM - 4Kb) и Ethernet контроллер Wiznet 5500.
 
 Основано на примерах для W5500 EVB (LCP13xx + W5500) , но довольно серьезно модифицировано (по причинам различий в архитектуре процессоров ARM и AtMEGA, a также немалого количества багов в коде приложений для W5500 EVB).
 
@@ -38,7 +38,7 @@
 13. ZEVERO SD PetitFS бутлоадер (для двух процессоров): [M1284p](../master/bootloader_zevero_sd_m1284p_make/)/[M644p](../master/bootloader_zevero_sd_m644p_make/)
 14. C обновлением через бутлоадер: Wiznet Loopback TCP/UDP Static IP + FTP-сервер (для обновления программы через FTP-клиент) + SD-бутлоадер ZEVERO, (для двух процессоров): [M644p](../master/18_m644p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)/[M1284p](../master/18_m1284p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)
 15. [C обновлением через бутлоадер: Веб-сервер (с AJAX) + FTP-сервер (для обновления программы через FTP-клиент и загрузки контента Веб-сервера) + SD-бутлоадер ZEVERO, только для M1284p](../master/17_m1284p_BTLD_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
-16. [IOT Blynk client Example with Blynk smartphone application (checked only Android side) - NO Arduino CODE, used Wiznet Sockets](../master/19_m1284p_WIZNET_blynk/)
+16. [IOT(Интернет вещей) Blynk-клиент пример с Blynk-приложением для смартфона (проверен только на Android (должен работать и в IOS)) - КОД НЕ АРДУИНО, использована библиотека Wiznet-сокетов](../master/19_m1284p_WIZNET_blynk/)
 
 #### Blynk application screenshot:
 
