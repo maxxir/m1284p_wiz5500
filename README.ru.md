@@ -54,7 +54,7 @@
 
 ## Примечания:
 * [m1284P схема](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_schematic.png/)
-* [m1284P диаграмма типичного соединения](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_connection_schematic.png/)
+* [m1284P диаграмма соединения](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_connection_schematic.png/)
 * [m1284P пинмап платы](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_pinmap.png/)
 * [Blynk IOT приложение QR-code](../master/19_m1284p_WIZNET_blynk/Blynk_application/app1_m1284p_and_W5500_QR.png/)
 
