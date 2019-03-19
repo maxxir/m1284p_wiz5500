@@ -12,7 +12,7 @@
 
 * [Kicad open hardware](../master/KiCad_M644_breakout_v1.2d/) 
 
-#### Моя собственная борда на m644p/m1284p:
+#### Моя собственная девборда на m644p/m1284p:
 
 <img src="../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_top.png" alt="m1284p Board 3D Top" width="50%" height="50%">
 
@@ -21,7 +21,7 @@
 <img src="../master/KiCad_M644_breakout_v1.2d/Pictures/tested_system_photo_01.jpg" alt="m1284p System photo" width="50%" height="50%">
 
 
-## Софт. Что сделано ( В порядке увеличения комплексности )
+## Софт. Что сделано ( В порядке усложнения )
 
 1. [Wiznet Loopback TCP/UDP Static IP](../master/03_m1284p_WIZNET_loopback_STATIC_IP/)
 2. [Wiznet Loopback TCP/UDP DHCP IP](../master/04_m1284p_WIZNET_loopback_DHCP/)
@@ -31,10 +31,10 @@
 6. [ICMP(ping) пример](../master/08_m1284p_WIZNET_ICMP_aka_ping/)
 7. [Простой Веб-сервер (одна страница HTTP POST/GET запросы)](../master/09_m1284p_WIZNET_simple_webserver/)
 8. [HTTPD Веб-сервер со всем содержимымым в AVR FLASH-памяти (используются AJAX запросы)](../master/11_m1284p_WIZNET_HTTPServer_FLASH_pages/)
-9. [HTTPD Web Server with all content on SD card (Chang FAT FS lib using) (with AJAX queries)](../master/12_m1284p_WIZNET_HTTPServer_SDCARD_pages/)
-10. [FTPC example (only active mode sorry) with store content on SD card (console dialog from serial terminal like putty..)](../master/14_m1284p_WIZNET_FTPC_FATFS/)
-11. [FTPD example (both active-passive modes working) with store content on SD card, checked on FTP clients: Windows 7 cmd, Total commander, WinSCP.](../master/15_m1284p_WIZNET_FTPD_FATFS/)
-12. [Combined HTTPD + FTPD for  dynamic upload WEB server pages, with all content on SD card (Chang FAT FS lib using) (with AJAX queries)](../master/16_m1284p_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
+9. [HTTPD Веб-сервер со всем содержимымым на SD-карте (Chang FAT FS библиотека) (AJAX запросы)](../master/12_m1284p_WIZNET_HTTPServer_SDCARD_pages/)
+10. [FTP-клиент (работает только в активном режиме) c сохранением контента на SD-карте ( диалог FTPC посредством последовательно терминала например: Terminal v1.9b by Bray, putty и тд.)](../master/14_m1284p_WIZNET_FTPC_FATFS/)
+11. [FTP-сервер (работает в обоих режимах активный/пассивный) c сохранением контента на SD-карте, проверена работа с FTP клиентами: Windows 7 cmd - т.е ftp, Total commander (в нем надо добавить небольшой паттерн на выборку), WinSCP.](../master/15_m1284p_WIZNET_FTPD_FATFS/)
+12. [Комбинируем HTTPD + FTPD для динамической загрузки страниц Веб-сервера, весь контент на SD-карте (Chang FAT FS библиотека) (AJAX запросы)](../master/16_m1284p_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
 13. ZEVERO SD PetitFS Bootloader for both [M1284p](../master/bootloader_zevero_sd_m1284p_make/)/[M644p](../master/bootloader_zevero_sd_m644p_make/)
 14. Bootloaded code: Combined Wiznet Loopback TCP/UDP Static IP + FTPD server (for bootloading via FTP client) + SD-bootloader ZEVERO, working on [M644p](../master/18_m644p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)/[M1284p](../master/18_m1284p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)
 15. [Bootloaded code: Combined HTTPD server (with AJAX) + FTPD server (for bootloading via FTP client and upload WEB server contents)(with AJAX queries) + SD-bootloader ZEVERO, working on M1284p only](../master/17_m1284p_BTLD_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
