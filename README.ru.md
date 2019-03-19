@@ -12,7 +12,7 @@
 
 * [Kicad open hardware](../master/KiCad_M644_breakout_v1.2d/) 
 
-#### Моя собственная девборда на m644p/m1284p:
+#### Моя плата на m644p/m1284p (KiCad 3D render):
 
 <img src="../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_top.png" alt="m1284p Board 3D Top" width="50%" height="50%">
 
@@ -34,9 +34,9 @@
 9. [HTTPD Веб-сервер со всем содержимымым на SD-карте (Chang FAT FS библиотека) (AJAX запросы)](../master/12_m1284p_WIZNET_HTTPServer_SDCARD_pages/)
 10. [FTP-клиент (работает только в активном режиме) c сохранением контента на SD-карте ( диалог FTPC посредством последовательно терминала например: Terminal v1.9b by Bray, putty и тд.)](../master/14_m1284p_WIZNET_FTPC_FATFS/)
 11. [FTP-сервер (работает в обоих режимах активный/пассивный) c сохранением контента на SD-карте, проверена работа с FTP клиентами: Windows 7 cmd - т.е ftp, Total Сommander (в нем надо добавить небольшой паттерн на выборку), WinSCP.](../master/15_m1284p_WIZNET_FTPD_FATFS/)
-12. [Комбинируем HTTPD + FTPD для динамической загрузки страниц Веб-сервера, весь контент на SD-карте (Chang FAT FS библиотека) (AJAX запросы)](../master/16_m1284p_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
-13. ZEVERO SD PetitFS бутлоадер для двух процессоров: [M1284p](../master/bootloader_zevero_sd_m1284p_make/)/[M644p](../master/bootloader_zevero_sd_m644p_make/)
-14. Bootloaded code: Combined Wiznet Loopback TCP/UDP Static IP + FTPD server (for bootloading via FTP client) + SD-bootloader ZEVERO, working on [M644p](../master/18_m644p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)/[M1284p](../master/18_m1284p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)
+12. [HTTPD + FTPD для динамической загрузки страниц Веб-сервера, весь контент на SD-карте (Chang FAT FS библиотека) (AJAX запросы)](../master/16_m1284p_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
+13. ZEVERO SD PetitFS бутлоадер (для двух процессоров): [M1284p](../master/bootloader_zevero_sd_m1284p_make/)/[M644p](../master/bootloader_zevero_sd_m644p_make/)
+14. C обновлением через бутлоадер: Wiznet Loopback TCP/UDP Static IP + FTP-сервер (для загрузки через FTP-клиент) + SD-бутлоадер ZEVERO, (для двух процессоров): [M644p](../master/18_m644p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)/[M1284p](../master/18_m1284p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)
 15. [Bootloaded code: Combined HTTPD server (with AJAX) + FTPD server (for bootloading via FTP client and upload WEB server contents)(with AJAX queries) + SD-bootloader ZEVERO, working on M1284p only](../master/17_m1284p_BTLD_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
 16. [IOT Blynk client Example with Blynk smartphone application (checked only Android side) - NO Arduino CODE, used Wiznet Sockets](../master/19_m1284p_WIZNET_blynk/)
 
