@@ -1,36 +1,36 @@
 # m1284p_wiz5500
 
-*Read this in other languages: [English](README.md), [Русский](README.ru.md).*
+*На других языках: [English](README.md), [Русский](README.ru.md).*
 
-Lots of projects using ATMEGA 1284p(644p partially) and Ethernet NIC Wiznet 5500.
+Множество проектов использующих ATMEGA 1284p(644p не все примеры) and Ethernet контроллер Wiznet 5500.
 
-Based on W5500 EVB examples, but heavily modified.
+Основано на примерах для W5500 EVB (LCP13xx + W5500) , но довольно серьезно модифицировано (по причинам различий в архитектуре процессоров ARM и AtMEGA, a также немалого количества багов в коде приложений для W5500 EVB).
 
-Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
+Собиралось при помощи Eclipse Kepler с плагином AVR-Eclipse и тулчейном avr-gcc 4.9.2.
 
-## Hardware part of the projects
+## Железо проекта
 
 * [Kicad open hardware](../master/KiCad_M644_breakout_v1.2d/) 
 
-#### This is my own m644p/m1284p custom board looks like:
+#### Моя собственная борда на m644p/m1284p:
 
 <img src="../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_top.png" alt="m1284p Board 3D Top" width="50%" height="50%">
 
-#### Tested system photo:
+#### Фото тестовой системы:
 
 <img src="../master/KiCad_M644_breakout_v1.2d/Pictures/tested_system_photo_01.jpg" alt="m1284p System photo" width="50%" height="50%">
 
 
-## Software part. What done ( In order of increasing complexity )
+## Софт. Что сделано ( В порядке увеличения комплексности )
 
 1. [Wiznet Loopback TCP/UDP Static IP](../master/03_m1284p_WIZNET_loopback_STATIC_IP/)
 2. [Wiznet Loopback TCP/UDP DHCP IP](../master/04_m1284p_WIZNET_loopback_DHCP/)
-3. [DNS example](../master/05_m1284p_WIZNET_DNS_client/)
-4. [SNTP + DNS example](../master/06_m1284p_WIZNET_DNS_SNTP_client/)
-5. [Telnet server example](../master/07_m1284p_WIZNET_telnets_basic/)
-6. [ICMP aka ping example](../master/08_m1284p_WIZNET_ICMP_aka_ping/)
-7. [Simple Web Server (one page with HTTP POST/GET queries)](../master/09_m1284p_WIZNET_simple_webserver/)
-8. [HTTPD Web Server with all contents in AVR FLASH (with AJAX queries)](../master/11_m1284p_WIZNET_HTTPServer_FLASH_pages/)
+3. [DNS пример](../master/05_m1284p_WIZNET_DNS_client/)
+4. [SNTP + DNS пример](../master/06_m1284p_WIZNET_DNS_SNTP_client/)
+5. [Telnet server пример](../master/07_m1284p_WIZNET_telnets_basic/)
+6. [ICMP(ping) пример](../master/08_m1284p_WIZNET_ICMP_aka_ping/)
+7. [Простой Веб-сервер (одна страница HTTP POST/GET запросы)](../master/09_m1284p_WIZNET_simple_webserver/)
+8. [HTTPD Веб-сервер со всем содержимымым в AVR FLASH-памяти (используются AJAX запросы)](../master/11_m1284p_WIZNET_HTTPServer_FLASH_pages/)
 9. [HTTPD Web Server with all content on SD card (Chang FAT FS lib using) (with AJAX queries)](../master/12_m1284p_WIZNET_HTTPServer_SDCARD_pages/)
 10. [FTPC example (only active mode sorry) with store content on SD card (console dialog from serial terminal like putty..)](../master/14_m1284p_WIZNET_FTPC_FATFS/)
 11. [FTPD example (both active-passive modes working) with store content on SD card, checked on FTP clients: Windows 7 cmd, Total commander, WinSCP.](../master/15_m1284p_WIZNET_FTPD_FATFS/)
