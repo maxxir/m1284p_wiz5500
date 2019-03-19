@@ -40,28 +40,28 @@
 15. [C обновлением через бутлоадер: Веб-сервер (с AJAX) + FTP-сервер (для обновления программы через FTP-клиент и загрузки контента Веб-сервера) + SD-бутлоадер ZEVERO, только для M1284p](../master/17_m1284p_BTLD_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
 16. [IOT(Интернет вещей) Blynk-клиент пример с Blynk-приложением для смартфона (проверен только на Android (должен работать и в IOS)) - КОД НЕ АРДУИНО, использована библиотека Wiznet-сокетов](../master/19_m1284p_WIZNET_blynk/)
 
-#### Blynk application screenshot:
+#### Скриншот приложения Blynk:
 
 <img src="../master/19_m1284p_WIZNET_blynk/Blynk_application/Screenshot_2019-03-18-13-37-20-278_cc.blynk.png" alt="Blynk application" width="50%" height="50%">
 
 [//]: # (TODO:  Add all other links here)
 
-## What TODO:
+## Софт. Что хочу добавить :
 
-17. Bootloaded code: IOT BLYNK client combined with FTPD server (for bootloading via FTP client)+ SD-bootloader ZEVERO
-18. TFTP client
-19. MQTT client
+17. C обновлением через бутлоадер: IOT(Интернет вещей) Blynk-клиент + FTP-сервер (для обновления программы через FTP-клиент)+ SD-бутлоадер ZEVERO
+18. TFTP клиент
+19. MQTT клиент
 
-## Remarks:
-* [m1284P schematic](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_schematic.png/)
-* [m1284P typical connection diagram](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_connection_schematic.png/)
-* [m1284P Board pinmap](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_pinmap.png/)
-* [Blynk IOT Application QR-code](../master/19_m1284p_WIZNET_blynk/Blynk_application/app1_m1284p_and_W5500_QR.png/)
+## Примечания:
+* [m1284P схема](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_schematic.png/)
+* [m1284P диаграмма типичного соединения](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_connection_schematic.png/)
+* [m1284P пинмап платы](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_pinmap.png/)
+* [Blynk IOT приложение QR-code](../master/19_m1284p_WIZNET_blynk/Blynk_application/app1_m1284p_and_W5500_QR.png/)
 
-[>>Hardware and Software parts (no Blynk) discussion your are welcome here..](https://www.avrfreaks.net/forum/need-w5500-example-c-tcp)
+[>>Обсужение проекта (исключая Blynk) здесь..](https://www.avrfreaks.net/forum/need-w5500-example-c-tcp)
 
-[>>Blynk part discussion your are welcome here..](https://community.blynk.cc/t/port-from-w5500-evb-to-atmega1284p-w5500-wiznet-sockets-library-without-arduino/35235)
+[>>Обсужение Blynk части проекта здесь..](https://community.blynk.cc/t/port-from-w5500-evb-to-atmega1284p-w5500-wiznet-sockets-library-without-arduino/35235)
 
 
-## Author porting to AVR m1284p/m644p
-* **Ibragimov Maksim aka maxxir**
+## Автор порта на AVR m1284p/m644p
+* **Ибрагимов Максим  - maxxir**
