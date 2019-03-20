@@ -2,7 +2,7 @@
 
 *На других языках: [English](README.md), [Русский](README.ru.md).*
 
-Множество проектов использующих ATMEGA 1284p и Ethernet контроллер Wiznet 5500 (на 644p работает не всё т.к. мало RAM - 4Kb).
+Множество проектов использующих ATMEGA 1284p/644p и Ethernet контроллер Wiznet 5500.
 
 Основано на примерах для W5500 EVB (LCP13xx + W5500) , но довольно серьезно модифицировано (по причинам различий в архитектуре процессоров ARM и AtMEGA, a также немалого количества багов в коде приложений для W5500 EVB).
 
@@ -57,6 +57,7 @@
 * [m1284P диаграмма соединения](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_connection_schematic.png/)
 * [m1284P пинмап платы](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_pinmap.png/)
 * [Blynk IOT приложение QR-code](../master/19_m1284p_WIZNET_blynk/Blynk_application/app2_m1284p_and_W5500_QR.png/)
+* На AtMega644p работают не все примеры т.к недостаточно RAM (4kb).
 
 [>>Обсужение проекта (исключая Blynk) здесь..](https://www.avrfreaks.net/forum/need-w5500-example-c-tcp)
 
