@@ -1,0 +1,18 @@
+Synopsis:
+1284BOOT.BIN.bootloaded - precompiled binary for use with bootloader zevero for m1284p
+
+IP specs in this binary:
+wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
+		.ip   = {192, 168, 0, 199},         // IP address
+		.sn   = {255, 255, 255, 0},         // Subnet mask
+		.dns =  {8,8,8,8},			  // DNS address (google dns)
+		.gw   = {192, 168, 0, 1}, // Gateway address
+		.dhcp = NETINFO_STATIC};    //Static IP configuration
+
+How to use:
+Just copy 1284BOOT.BIN.bootloaded to root SD-card (FAT32 FS) as 1284BOOT.BIN,
+then insert SD-card into m1284p system (with bootloader zevero flashed before),
+and reboot m1284p system.
+
+maxxir 
+23.03.2019 10:27:11

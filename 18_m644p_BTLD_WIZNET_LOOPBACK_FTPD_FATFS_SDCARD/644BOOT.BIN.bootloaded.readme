@@ -1,0 +1,18 @@
+Synopsis:
+644BOOT.BIN.bootloaded - precompiled binary for use with bootloader zevero for m644p
+
+IP specs in this binary:
+wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
+		.ip   = {192, 168, 1, 199},         // IP address
+		.sn   = {255, 255, 255, 0},         // Subnet mask
+		.dns =  {8,8,8,8},			  // DNS address (google dns)
+		.gw   = {192, 168, 1, 1}, // Gateway address
+		.dhcp = NETINFO_STATIC};    //Static IP configuration
+
+How to use:
+Just copy 644BOOT.BIN.bootloaded to root SD-card (FAT32 FS) as 644BOOT.BIN,
+then insert SD-card into m644p system (with bootloader zevero flashed before),
+and reboot m644p system.
+
+maxxir 
+23.03.2019 10:34:30
