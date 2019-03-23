@@ -39,6 +39,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 14. Bootloaded code: Combined Wiznet Loopback TCP/UDP Static IP + FTPD server (for bootloading via FTP client) + SD-bootloader ZEVERO, working on [M644p](../master/18_m644p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)/[M1284p](../master/18_m1284p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)
 15. [Bootloaded code: Combined HTTPD server (with AJAX) + FTPD server (for bootloading via FTP client and upload WEB server contents) + SD-bootloader ZEVERO, working on M1284p only](../master/17_m1284p_BTLD_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
 16. [IOT Blynk client Example with Blynk smartphone application (checked only Android side) - NO Arduino CODE, used Wiznet Sockets](../master/19_m1284p_WIZNET_blynk/)
+17. [Bootloaded code: IOT BLYNK client combined with FTPD server (for bootloading via FTP client)+ SD-bootloader ZEVERO, working on M1284p only](../master/20_m1284p_BTLD_WIZNET_BLYNK_FTPD_FATFS_SDCARD/)
 
 #### Blynk application screenshot:
 
@@ -48,7 +49,6 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 
 ## What TODO:
 
-17. Bootloaded code: IOT BLYNK client combined with FTPD server (for bootloading via FTP client)+ SD-bootloader ZEVERO
 18. TFTP client
 19. MQTT client
 
