@@ -39,7 +39,7 @@
 14. C обновлением через бутлоадер: Wiznet Loopback TCP/UDP Static IP + FTP-сервер (для обновления программы через FTP-клиент) + SD-бутлоадер ZEVERO, (для двух процессоров): [M644p](../master/18_m644p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)/[M1284p](../master/18_m1284p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)
 15. [C обновлением через бутлоадер: Веб-сервер (с AJAX) + FTP-сервер (для обновления программы через FTP-клиент и загрузки контента Веб-сервера) + SD-бутлоадер ZEVERO, только для M1284p](../master/17_m1284p_BTLD_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
 16. [IOT(Интернет вещей) Blynk-клиент пример с Blynk-приложением для смартфона (проверен только на Android (должен работать и в IOS)) - КОД НЕ АРДУИНО, использована библиотека Wiznet-сокетов](../master/19_m1284p_WIZNET_blynk/)
-
+17. [C обновлением через бутлоадер: IOT(Интернет вещей) Blynk-клиент + FTP-сервер (для обновления программы через FTP-клиент)+ SD-бутлоадер ZEVERO, только для M1284p](../master/20_m1284p_BTLD_WIZNET_BLYNK_FTPD_FATFS_SDCARD/)
 #### Скриншот приложения Blynk:
 
 <img src="../master/19_m1284p_WIZNET_blynk/Blynk_application/Screenshot_2019-03-18-13-37-20-278_cc.blynk.png" alt="Blynk application" width="50%" height="50%">
@@ -47,8 +47,6 @@
 [//]: # (TODO:  Add all other links here)
 
 ## Софт. Что хочу добавить :
-
-17. C обновлением через бутлоадер: IOT(Интернет вещей) Blynk-клиент + FTP-сервер (для обновления программы через FTP-клиент)+ SD-бутлоадер ZEVERO
 18. TFTP клиент
 19. MQTT клиент
 
