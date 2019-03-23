@@ -8,6 +8,7 @@
 
 #ifdef IP_WORK
 //NIC metrics for WORK PC
+uint8_t DNS_2nd[4]    = {192, 168, 0, 1};      	// Secondary DNS server IP
 wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
 		.ip   = {192, 168, 0, 199},         // IP address
 		.sn   = {255, 255, 255, 0},         // Subnet mask
@@ -16,6 +17,7 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
 		.dhcp = NETINFO_STATIC};    //Static IP configuration
 #else
 //NIC metrics for another PC (second IP configuration)
+uint8_t DNS_2nd[4]    = {192, 168, 1, 1};      	// Secondary DNS server IP
 wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
 		.ip   = {192, 168, 1, 199},         // IP address
 		.sn   = {255, 255, 255, 0},         // Subnet mask
@@ -28,4 +30,8 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
 #ifdef FTPD_AUTH_EN
 const char ftpd_user[] = "user1234";
 const char ftpd_pass[] = "open_sesame";
+
+//My auth token for my android test application "m1284 + W5500":
+uint8_t auth[] = "add_your_own_token_here";	// You should get your own Auth Token in the BLYNK App
+
 #endif
