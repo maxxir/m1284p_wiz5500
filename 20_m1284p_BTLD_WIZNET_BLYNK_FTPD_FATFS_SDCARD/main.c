@@ -6,7 +6,7 @@
  */
 
 /*
- * (20) Combine together two examples:
+ * (20)OK Combine together two examples:
  * [19_m1284p_WIZNET_blynk] + [18_m1284p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD].
  * To upload Blynk Application code via PC ftp client like TotalCommander, WinSCP, etc.. to m1284p+W5500 users board,
  * and of course work with Blynk Application client.
@@ -36,8 +36,45 @@
 #include "Ethernet/wizchip_conf.h"
 #include "Application/loopback/loopback.h"
 #include "Internet/FTPServer_avr/ftpd.h"
+#include "Application/Blynk/blynk.h"
+#include "Internet/DNS/dns.h"
 
 uint8_t gFTPBUF[_MAX_SS_FTPD]; //512 bytes
+
+#define _MAIN_DEBUG_
+
+//***********BLYNK related: BEGIN
+#define SOCK_BLYNK_CLIENT		6
+
+// Shouldn't used here, because used DNS resolving BLYNK server IP
+// IP: 139.59.206.133 for <blynk-cloud.com> via WIN7 nslookup - actually need to use DNS resolving
+//Resolve here via DNS query see below Domain_IP[4]
+//uint8_t blynk_server_ip[4] = {139, 59, 206, 133};		// Blynk cloud server IP (cloud.blynk.cc, 8422)
+//uint8_t BLYNK_RX_BUF[DATA_BUF_SIZE];
+
+uint8_t BLYNK_TX_BUF[BLYNK_DATA_BUF_SIZE];
+
+//BLYNK Virtual pins state changed flags
+uint8_t v15_changed;
+uint8_t v20_changed;
+
+//***********BLYNK related: END
+
+//***************** DNS: BEGIN
+//////////////////////////////////////////////////
+// Socket & Port number definition for Examples //
+//////////////////////////////////////////////////
+#define SOCK_DNS       5
+
+unsigned char gDATABUF_DNS[512];
+//#define IP_WORK
+
+////////////////
+// DNS client //
+////////////////
+uint8_t Domain_name[] = BLYNK_DEFAULT_DOMAIN;    	// BLYNK server URI
+uint8_t Domain_IP[4]  = {0, };               		// Translated IP address by DNS Server
+//***************** DNS: END
 
 
 //***********Prologue for fast WDT disable & and save reason of reset/power-up: BEGIN
@@ -245,6 +282,79 @@ uint16_t adc_read(uint8_t channel)
 }
 //***************** ADC: END
 
+//*********************************Timer2 PWM: BEGIN
+/*
+ * Handle PWM out PD7-PIN15:
+ * OCR2A = 0/127/255; Duty 0/50/100%
+
+ * Handle PWM out PD6-PIN14:
+ * OCR2B = 0/127/255; Duty 0/50/100%
+
+ */
+void pwm8bit_timer2_init(void)
+{
+	//PWM on TIMER2 (PD7/OC2A) &&  TIMER2 (PD6/OC2B)
+	// PHASE CORRECT PWM 8-bit mode setup
+	// 31.25kHz FREQ OUT
+
+	// Set PD7 to OUT
+	DDRD |= (1<<7);
+	// Set PD6 to OUT
+	DDRD |= (1<<6);
+	/*
+	 * Clear OCnA/OCnB/OCnC on compare
+	 * match when up-counting. Set
+	 * OCnA/OCnB/OCnC on compare match
+	 * when downcounting.
+	*/
+	TCCR2A = (1<<COM2A1)|(1<<COM2B1);
+
+	/*
+	 * PHASE CORRECT PWM 8-bit
+	*/
+	TCCR2A |= (1<<WGM20);
+
+	/*
+	 * clkI/O/1 (No prescaling)
+	*/
+	TCCR2B = (1<<CS20); // 16Mhz input
+
+	OCR2A = 0x0;// SET output duty cycle OCR2A 0%
+	OCR2B = 0x0;// SET output duty cycle OCR2B 0%
+}
+
+void pwm8bitfast_timer2_init(void)
+{
+	//PWM on TIMER2 (PD7/OC2A) && (PD6/OC2B )
+	// FAST PWM 8-bit mode setup
+	// 62.5kHz FREQ OUT
+
+	// Set PD7 to OUT
+	DDRD |= (1<<7);
+	// Set PD6 to OUT
+	DDRD |= (1<<6);
+	/*
+	 * Compare Output Mode, Fast PWM
+	 * Clear OCnA/OCnB/OCnC on compare match,
+	 * Set OCnA/OCnB/OCnC at TOP
+	*/
+	TCCR2A = (1<<COM2A1)|(1<<COM2B1);
+
+	/*
+	 * FAST PWM 8-bit
+	*/
+	TCCR2A |= (1<<WGM21)|(1<<WGM20);
+
+	/*
+	 * clkI/O/1 (No prescaling)
+	*/
+	TCCR2B = (1<<CS20); // 16Mhz input
+
+	OCR2A = 0x0;// SET output OCR2A duty cycle 0%
+	OCR2B = 0x0;// SET output OCR2B duty cycle 0%
+}
+//*********************************Timer2 PWM: END
+
 
 //***************** WIZCHIP INIT: BEGIN
 //Loopback sockets definition
@@ -304,22 +414,6 @@ void IO_LIBRARY_Init(void) {
 	//wizchip_setinterruptmask(IK_SOCK_0);
 }
 //***************** WIZCHIP INIT: END
-
-////////////////////////////////////////////////
-//HTTPD  Sockets Definition  				  //
-////////////////////////////////////////////////
-//#define MAX_HTTPSOCK	4
-//uint8_t socknumlist[] = {4, 5, 6, 7};
-//#define MAX_HTTPSOCK	2
-//uint8_t socknumlist[] = {0, 1};
-//#define MAX_HTTPSOCK	1
-//uint8_t socknumlist[] = {0};
-
-////////////////////////////////////////////////
-//HTTPD  Shared Buffer Definition  				  //
-////////////////////////////////////////////////
-//uint8_t RX_BUF[HTTPD_MAX_BUF_SIZE];
-//uint8_t TX_BUF[HTTPD_MAX_BUF_SIZE];
 
 //****************************FAT FS initialize: BEGIN
 static void put_rc (FRESULT rc)
@@ -547,12 +641,70 @@ int main()
 	avr_init();
 	spi_init(); //SPI Master, MODE0, 4Mhz(DIV4), CS_PB.3=HIGH - suitable for WIZNET 5x00(1/2/5)
 
+	//Bullet proof: clear Virtual pins state change flags
+	v15_changed = 0;
+	v20_changed = 0;
 
 	// Print program metrics
 	PRINTF("%S", str_prog_name);// Название программы
 	PRINTF("Compiled at: %S %S\r\n", compile_time, compile_date);// Время Дата компиляции
 	PRINTF(">> MCU is: %S; CLK is: %luHz\r\n", str_mcu, F_CPU);// MCU Name && FREQ
 	PRINTF(">> Free RAM is: %d bytes\r\n", freeRam());
+
+	//Wizchip WIZ5500 Ethernet initialize
+	IO_LIBRARY_Init(); //After that ping must working
+	print_network_information();
+
+
+	/* DNS client Initialization */
+	PRINTF("> [BLYNK] Target Domain Name : %s\r\n", Domain_name);
+    DNS_init(SOCK_DNS, gDATABUF_DNS);
+
+    /* DNS processing */
+    int32_t ret;
+    if ((ret = DNS_run(netInfo.dns, Domain_name, Domain_IP)) > 0) // try to 1st DNS
+    {
+#ifdef _MAIN_DEBUG_
+       PRINTF("> 1st DNS Respond\r\n");
+#endif
+    }
+    else if ((ret != -1) && ((ret = DNS_run(DNS_2nd, Domain_name, Domain_IP))>0))     // retry to 2nd DNS
+    {
+#ifdef _MAIN_DEBUG_
+    	PRINTF("> 2nd DNS Respond\r\n");
+#endif
+    }
+    else if(ret == -1)
+    {
+#ifdef _MAIN_DEBUG_
+    	PRINTF("> MAX_DOMAIN_NAME is too small. Should be redefined it.\r\n");
+#endif
+       ;
+    }
+    else
+    {
+#ifdef _MAIN_DEBUG_
+    	PRINTF("> DNS Failed\r\n");
+#endif
+       ;
+    }
+
+    if(ret > 0)
+    {
+#ifdef _MAIN_DEBUG_
+    	printf("> Translated %s to [%d.%d.%d.%d]\r\n\r\n",Domain_name,Domain_IP[0],Domain_IP[1],Domain_IP[2],Domain_IP[3]);
+#endif
+    	//IOT BLYK app init:
+    	/* Blynk client Initialization  */
+    	PRINTF("Try connect to BLYNK SERVER [%s]: %d.%d.%d.%d:%d..\n\r",Domain_name,Domain_IP[0],Domain_IP[1],Domain_IP[2],Domain_IP[3],BLYNK_DEFAULT_PORT);
+    	blynk_begin(auth, Domain_IP, BLYNK_DEFAULT_PORT, BLYNK_TX_BUF, SOCK_BLYNK_CLIENT);
+    }
+    else
+    {
+    	PRINTF("> [BLYNK] Target Domain Name : %s resolve ERROR\r\nReboot board..\r\n", Domain_name);
+    	while(1);
+    }
+
 
 
 
@@ -586,44 +738,25 @@ int main()
 #if defined(F_APP_FTP)
 	ftpd_init(netInfo.ip);
 #endif
-//**************************************HTTPD init: BEGIN
-	/* HTTP Server Initialization  */
-	//Should not used here
-	//httpServer_init(TX_BUF, RX_BUF, MAX_HTTPSOCK, socknumlist);		// Tx/Rx buffers (1kB) / The number of W5500 chip H/W sockets in use
-	//reg_httpServer_cbfunc(NVIC_SystemReset, NULL); 					// Callback: NXP MCU Reset
-	//reg_httpServer_cbfunc(NULL, NULL); 					// Callback: Still not used here ARV System reset, AVR WDT reset
-	//In this demo all www content saved onto SD-Card (you must copy all from <WWW> folder to ROOT SD-Card)
-//**************************************HTTPD init: END
 
-	/* Loopback Test: TCP Server and UDP */
-	// Test for Ethernet data transfer validation
 	uint32_t timer_link_1sec = millis();
 	//uint32_t timer_httpd_1sec = millis();
 	uint32_t timer_uptime_60sec = millis();
 	bool run_user_applications = true;
+	uint8_t blynk_restore_connection = 1;
+	uint8_t timer_led2_push_10sec = 0;
+	static uint8_t _msg[64] = "\0";
 	while(1)
 	{
 		//Here at least every 1sec
 		wdt_reset(); // WDT reset at least every sec
 
-    	/* HTTPD */
-		/*HTTPD timer 1 sec interval tick*/
-		//Should not used here
-		/*
-    	if((millis()-timer_httpd_1sec)> 1000)
-		{
-    		//here every 1 sec
-    		timer_httpd_1sec = millis();
-    		////////////////////////////////////////////////////////
-    		// SHOULD BE Added HTTP Server Time Handler to your 1s tick timer
-    		httpServer_time_handler(); 	// for HTTP server time counter
-    		////////////////////////////////////////////////////////
-		}
-		*/
-
     	// TODO: insert user's code here
     	if(run_user_applications)
     	{
+    		// Blynk process handler
+    		blynk_run();
+
     		//for(i = 0; i < MAX_HTTPSOCK; i++)	httpServer_run(i); 	// HTTP Server handler
     		//for(i = 0; i < MAX_HTTPSOCK; i++)	httpServer_run_avr(i); 	// HTTP Server handler avr optimized
 
@@ -684,27 +817,46 @@ int main()
 			}
 #endif
 
-    		//!! SW1 pressing action
-    		if(!sw1_read())// Check for SW1 pressed every second
-    		{
-    			// SW1 is pressed
-    			//led1_high(); //LED1 ON
-    			if(prev_sw1)
-    			{
-    				//!! Здесь по факту нажатия кнопки (1->0 SW1)
-    				//!! Debug only
-    				//PRINTF("SW1 is pressed\r\nADC0/PA0 is: %u\r\n", adc_read(0));
-    				PRINTF("SW1 is pressed, Reboot the board..\r\n");
-    				while(1);
-    			}//if(prev_sw1)
-    			prev_sw1 = 0; // Store SW1 state for next iteration
-    		}//if(!sw1_read())
-    		else
-    		{
-    			// SW1 is unpressed
-    			//led1_low(); // LED1 OFF
-    			prev_sw1 = 1;// Store SW1 state for next iteration
-    		}//if(!sw1_read())else..
+
+    		//!!Blynk every seconds tasks
+			//To restore GPIO state on start-up application
+			if(blynk_restore_connection)
+			{
+				if(is_blynk_connection_available())
+				{
+					blynk_restore_connection = 0;
+					//Requests Server to re-send current values for all widgets
+					PRINTF("++blynk_syncAll event\r\n"); //Just for debug
+					blynk_syncAll();
+				}
+			}
+
+			//Virtual pins state change check here
+			if(v15_changed)
+			{
+				v15_changed = 0; //Drop flag
+				//Push message with changed V15 value (LED PWM PIN15/PD7 )
+				blynk_push_virtual_pin(15);
+
+			}
+			else if(v20_changed)
+			{
+				v20_changed = 0; //Drop flag
+				//Push message with changed V20 value (LED1 D20/PC4)
+				blynk_push_virtual_pin(20);
+			}
+			//Every 10sec event for LED2 PIN13, and uptime device
+			if(++timer_led2_push_10sec == 10)
+			{
+				timer_led2_push_10sec = 0; //Clear timer_led2..
+				//Every 10sec toggle, and push LED2 PIN13/PD5 state to BLYNK server (widget Value Display)
+				led2_tgl();
+				blynk_push_pin(13);
+
+				//Every 10sec push message: "Uptime: xxx sec; Free RAM: xxxxx bytes", to BLYNK server (widget Terminal)
+				SPRINTF(_msg, "Uptime: %lu sec; Free RAM: %d bytes\r\n", millis()/1000, freeRam());
+				blynk_push_virtual_pin_msg(1, _msg);
+			}
 		}
 
 
@@ -779,8 +931,14 @@ static void avr_init(void)
 	led1_conf();
 	led1_low();// LED1 is OFF
 
+	led2_conf();
+	led2_low();//LED2 is OFF
+
 
 	sw1_conf();//SW1 internal pull-up
+
+	//pwm8bitfast_timer2_init(); // PD7/OC2A used as FAST 8bit PWM (62.5kHz FREQ OUT)
+	pwm8bit_timer2_init(); // PD7/OC2A used as PHASE CORRECT 8bit PWM (31.25kHz FREQ OUT)
 
 	sei(); //re-enable global interrupts
 

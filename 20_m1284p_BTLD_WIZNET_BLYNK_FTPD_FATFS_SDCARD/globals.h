@@ -113,8 +113,8 @@ extern uint8_t DNS_2nd[4];
 
 //#define _MAIN_DEBUG_ //Not used here
 
-#define CHK_RAM_LEAKAGE
-#define CHK_UPTIME
+#undef CHK_RAM_LEAKAGE
+#undef CHK_UPTIME
 
 #define BLYNK_DATA_BUF_SIZE 1024
 
