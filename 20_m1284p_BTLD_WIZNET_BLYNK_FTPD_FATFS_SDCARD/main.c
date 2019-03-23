@@ -4,6 +4,21 @@
  *  Created on: 22 нояб. 2018 г.
  *      Author: maxx
  */
+
+/*
+ * (20) Combine together two examples:
+ * [19_m1284p_WIZNET_blynk] + [18_m1284p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD].
+ * To upload Blynk Application code via PC ftp client like TotalCommander, WinSCP, etc.. to m1284p+W5500 users board,
+ * and of course work with Blynk Application client.
+ *
+ * PS.
+ * Further correction, or advices about the code from BLYNK authors (Vladimir Shimansky, Dmitriy Dumanskiy ..) is highly desirable.
+ * Because I'm not the author of BLYNK libs. And I don't quite understand how this should work in the right manner.
+ *
+ * Author of unofficial porting to AVR Mega1284p/644p + W5500 Ethernet NIC (Wiznet sockets library using without Arduino):
+ * Ibragimov Maxim aka maxxir, Russia Togliatty  23.03.2019
+ */
+
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -24,99 +39,6 @@
 
 uint8_t gFTPBUF[_MAX_SS_FTPD]; //512 bytes
 
-/*
- * (18) Base template minimal for FTPD bootloaded application with TCP/IP loopback demo (m1284p)
- * TODO:
- * OK (v1.1) Add FTPD authorization abilities
- * (17) Combine together (16) + abilities to enter BootLoader (reset with WDT),
- * when occur event upload via FTPD to SD file with name <1284BOOT.BIN> (see STOR_CMD into <ftpd.c>)
- * TODO:
- * OK (v1.2)
- * OK (v1.2a) Some minor changes, added key <BOOT_DEBUG>
- * OK (v1.2b) Some minor changes
- * OK (v1.2d) Changed bootable image to 1284BOOT.BIN
- * Notes.
- * Works in pair with BootLoader project: <bootloader_zevero_sd_m1284p_make>
- * Also see </bootloader_zevero_sd_m1284p_make/m1284p_zevero_sd_m1284p_fuses.txt> to set correct fuses
- *
- * (16) HTTPD + FTPD + FATFS SDCARD - trying combine together projects:
- * <12_m1284p_WIZNET_HTTPServer_SDCARD_pages_v2.4d> + <15_m1284p_WIZNET_FTPD_FATFS_v1.4>
- * TODO:
- * OK (v1.0)1. Initial realize with some minor optimization
- * OK (v1.1)2. Add additional 60sec timer - <timer_uptime_60sec> for <CHK_RAM_LEAKAGE> and <CHK_UPTIME> events
- *
- * (15) FTP Server +FATFS SDCARD (PC-side checked on Win7 <WinSCP-5.9.1-Portable>/ WIN7 <ftp>(console client))
- * TODO:
- * OK (v1.1) 1. <scan_files> doesn't work properly on WinSCP, but WIN7 ftp <dir> command OK. - Fix it (in first approach with fake data show first ~45 elements from root SD-CARD FTPD)
- * Works with WinSCP put/get/delete/refresh - Marvelous!
- * PS. Checked work with the next FTP clients (WIN7):
- * WINSCP,
- * ftp - native WIN7 (terminal-style),
- * TotalCommander - need to add new type server with the next template:  d ? SSSSSSSSS TTT DD YYYY  nnnnnnnnnnnn
- *
- * OK (v1.1) 2. WIN7 ftp <get> (i.e. downloading file from FTPD SDCARD-device to PC, see <RETR_CMD>) - works but after download file, progress line still filling ~ 3-5 sec. - Fix it.
- * OK (v1.1) 3. WIN7 ftp <put> (i.e. uploading file from PC to FTPD SDCARD-device, see <STOR_CMD>) - not work properly, device just reboot. - Fix it.
- * OK (v1.2) 4. RAM usage optimize <ftpd.c>:
- * 	OK (v1.1) A) printf(..) change to PRINTF(..) (i.e. printf_P(..))
- * 	OK (v1.2) B) sprintf(..) change to SPRINTF(..) (i.e. sprintf_P(..)) - Save ~ 900 bytes RAM
- * 5. Optimize <scan_files>:
- *  OK (v1.3) A) To show ALL elements add inside <scan_files> -send(DATA_SOCK, dbuf, size); in portion by 10 elements  - until All elements being sent
- * 	OK (v1.3) B) Show real DATE(without TIME) of file from SD-CARD FTPD (Show only DATE without TIME (time showed with error, to show correct need to implement MLST and LMSD extension commands, defined in RFC 3659 ))
- * 	OK (v1.3) C) Try decrease: gFTPBUF[_MAX_SS_FTPD]; //512 bytes - for save RAM resources (optional)
- * 	OK (v1.4) Fix <_FTP_DEBUG_> in undefined state (at ftpd.c), further optimize <scan_files(..) - save ~90bytes RAM> (at ftpd.c)
- *
- * (14) FTP client (Active) +FATFS SDCARD (PC-side checked on Win7 <Xlight FTP portable>)
- * Notes: tested only Active mode with ASCII type (Not sure that PASV mode works properly..).
- * TODO:
- * 	OK 1. Without exist FTP server (PC side), device reset always (decide not fix yet..)
- * 	OK 2. <1> command (ls FTP server contents) received no more then _MAXX_SS(512) bytes - need to fix
- * 	Full implement Done with _MAX_SS_FTP=512 checked on ~35 elements show OK (~2362 bytes received)
- * 	!!Below is deprecated decision (read above)!!
- * 	Change at ftpc: _MAX_SS	(512 bytes) to _MAX_SS_FTP	(2048 bytes - defined at <globals.h>) - now show OK ~ 25-30 elements from FTPD directory
- * 	(to full implement need fix at:
-~355 line
-			if(gDataPutGetStart){
-				switch(Command.Second){
-				case s_dir:
-					PRINTF("dir waiting...\r\n");
-					if((size = getSn_RX_RSR(DATA_SOCK)) > 0){ // Don't need to check SOCKERR_BUSY because it doesn't not occur.
-						PRINTF("ok\r\n");
-						memset(dbuf, 0, _MAX_SS_FTP);
-						if(size > _MAX_SS_FTP) size = _MAX_SS_FTP - 1;
-						ret = recv(DATA_SOCK,dbuf,size);
- *
- * 	)
- * 	OK 3. <2> command (ls client side FATFS SDCARD contents)file name is empty (problem in scan_files()) - need to fix
- * 	OK 4. Auto-login to anonymous(pass:1234) for test purposes (look at  <proc_ftpc()> - Responses [R_220/R_331] )
- * 	OK 5. Add serial terminal session commands (look at ):
- * 		<t>. Test Message
- * 		<s>. Sta (uptime and freeram)
- * 		<r>. Reboot the board
- *
- * 	OK 6. Fix baud-rate issue on 115200bps 16Mhz
- * 	OK 7. Add reaction on <Rcvd Command: 530 Permission denied> after not correct authorization
- * 	(Add at  <proc_ftpc()> - Responses R_530) - Reboot the board
- *	OK 8. Test and fix command: 5> Put File to Server (checked only active mode(passive not tested))
- *	OK 9. Test and fix command: 6> Get File from Server
- *	OK 10. Add command: 8> Delete File from FTP server
- *	OK 11.Try add abilities to execute custom FTP server command. (Something like NOOP, HELP etc..)
- *	OK 12. Disable PASV mode (Tested - with bugs)
- *
- *
- * (3) WIZNET loopback + FATFS  (as template)
- * + Added FATFS init (from <02_m1284p_FATFS_Chang_tst>),
- * Trying WIZNET5500 init with using official Wiznet ioLibrary_Driver
- * working ping, assign static IP
- * LED1 = ON when phy_link detected
- * and loopback test on TCP-IP:5000 and UDP:3000 ports.
- * use Hercules terminal utility to check network connection see:
- *
- * https://wizwiki.net/wiki/doku.php?id=osh:cookie:loopback_test
- * https://www.hw-group.com/software/hercules-setup-utility
- *
- * Author of porting to AVR Mega:
- * Ibragimov Maxim, Russia Togliatty ~12.2018..02.2019
- */
 
 //***********Prologue for fast WDT disable & and save reason of reset/power-up: BEGIN
 uint8_t mcucsr_mirror __attribute__ ((section (".noinit")));
@@ -142,7 +64,7 @@ volatile unsigned char sig_reset_board; // Flag to reset board
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.1 BootLoaded BLYNK + LOOPBACK and FTPD server && FATFS SDCARD WIZNET_5500 ETHERNET 23/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2 BootLoaded BLYNK + LOOPBACK and FTPD server && FATFS SDCARD WIZNET_5500 ETHERNET 23/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -731,7 +653,7 @@ int main()
 		if((millis()-timer_link_1sec)> 1000)
 		{
 			//Just for test bootloader works
-			led1_tgl();
+			//led1_tgl();
 
 			//here every 1 sec
 			timer_link_1sec = millis();
@@ -761,18 +683,6 @@ int main()
 				}
 			}
 #endif
-    		//Check ETHERNET PHY link
-    		//Shouldn't used here, LED1 handle via HTTPD
-    		/*
-    		if(wizphy_getphylink() == PHY_LINK_ON)
-			{
-				led1_high();
-			}
-			else
-			{
-				led1_low();
-			}
-			/*/
 
     		//!! SW1 pressing action
     		if(!sw1_read())// Check for SW1 pressed every second
