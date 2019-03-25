@@ -19,6 +19,13 @@ extern "C" {
 
 #define F_STORAGE // If your target support a storage, you have to activate this feature and implement.
 
+#if defined(F_STORAGE)
+#include "ff.h"
+FIL fil;	// FatFs File objects
+FRESULT fr;	// FatFs function common result code
+#endif
+
+
 #define SOCK_TFTP		2
 
 #define INFO_DBG		0x01

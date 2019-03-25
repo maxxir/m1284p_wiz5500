@@ -554,12 +554,18 @@ int main()
 					//!! Здесь по факту нажатия кнопки (1->0 SW1)
 
 
-					printf("\r\n########## SW2 was pressed.\r\n");
-					strncpy(tftp_filename, 0x00, 50);
+					printf("\r\n########## SW1 was pressed.\r\n");
+					//strncpy(tftp_filename, 0x00, 50);
+					memset(tftp_filename, 0x0, 50);
 					strncpy(tftp_filename, "test.txt", 8);
 
-					tftp_server = (tftp_destip[0] << 24) | (tftp_destip[1] << 16) | (tftp_destip[2] << 8) | (tftp_destip[3]);
+					tftp_server = ((uint32_t)tftp_destip[0] << 24) | ((uint32_t)tftp_destip[1] << 16) | ((uint32_t)tftp_destip[2] << 8) | ((uint32_t)tftp_destip[3]);
 
+					PRINTF("TFTP IP address : %d.%d.%d.%d\r\n",tftp_destip[0],tftp_destip[1],tftp_destip[2],tftp_destip[3]);
+					PRINTF("TFTP IP address (32 bit) : %lu\r\n",tftp_server);
+
+
+/*
 					TFTP_read_request(tftp_server, tftp_filename);
 
 					uint8_t _ret = 0;
@@ -569,7 +575,7 @@ int main()
 						if(_ret != TFTP_PROGRESS)
 							break;
 					}
-
+*/
 					//!! Debug only
 					//PRINTF("SW1 is pressed\r\nADC0/PA0 is: %u\r\n", adc_read(0));
 					//PRINTF("SW1 is pressed\r\n");

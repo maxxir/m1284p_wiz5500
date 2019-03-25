@@ -20,6 +20,14 @@
 /* Extern Functions ---------------------------------------------*/
 #ifdef F_STORAGE
 extern void save_data(uint8_t *data, uint32_t data_len, uint16_t block_number);
+
+void save_data(uint8_t *data, uint32_t data_len, uint16_t block_number)
+{
+	//Nothing to do with received data yet..
+	//TODO: Add your own handler here
+	//Print out data as string
+	PRINTF("Data #%d-%lu:\r\n%s\r\n", block_number, data_len, data);
+}
 #endif
 
 /* Global Variable ----------------------------------------------*/
