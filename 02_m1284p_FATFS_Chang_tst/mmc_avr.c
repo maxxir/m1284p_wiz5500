@@ -19,7 +19,7 @@
 
 #include <avr/io.h>
 #include "diskio.h"
-
+#include "globals.h"
 
 /* Port controls  (Platform dependent) */
 
@@ -113,18 +113,24 @@ void power_on (void)
 	DDRB  |= _BV(MOSI) | _BV(SCK) | _BV(CSN);
 	PORTB |= _BV(MOSI) | _BV(SCK);
 
+
+#if defined(SPI_8_MHZ)
 	/* Enables SPI, selects "master", clock rate FCK / 2, and SPI mode 0 */
 	// SPI 8Mhz
-	/*
 	SPCR = _BV(SPE) | _BV(MSTR);
-	SPSR = _BV(SPI2X);
-	*/
-
+	SPSR = _BV(SPI2X); //FCK / 2 - 8Mhz
+#elif defined (SPI_4_MHZ)
 	/* Enables SPI, selects "master", clock rate FCK / 4, and SPI mode 0 */
 	// SPI 4Mhz
 	SPCR = _BV(SPE) | _BV(MSTR);
-	SPSR = 0x0;
-	
+	SPSR = 0x0; //FCK / 4 - 4Mhz
+#else
+	/* Enables SPI, selects "master", clock rate FCK / 4, and SPI mode 0 */
+	// SPI 4Mhz
+	SPCR = _BV(SPE) | _BV(MSTR);
+	SPSR = 0x0; //FCK / 4 - 4Mhz
+#endif
+
 }
 
 static
