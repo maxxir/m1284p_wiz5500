@@ -25,6 +25,10 @@
 
 //#define IP_WORK
 
+//SPI CLOCK 4 or 8Mhz
+#define SPI_4_MHZ
+//#define SPI_8_MHZ
+
 extern unsigned long millis(void);
 extern int freeRam (void);
 
