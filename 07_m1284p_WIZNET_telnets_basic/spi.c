@@ -30,6 +30,8 @@
 
 #include <avr/io.h>
 #include "spi.h"
+#include "globals.h"
+
 //#include "contiki-conf.h"
 
 /*
@@ -77,7 +79,13 @@ spi_init(void)
  
   /* Enables SPI, selects "master", clock rate FCK / 4 - 4Mhz, and SPI mode 0 */
   SPCR = _BV(SPE) | _BV(MSTR);
-  //SPSR = _BV(SPI2X); //FCK / 2 - 8Mhz
+#if defined(SPI_8_MHZ)
+  SPSR = _BV(SPI2X); //FCK / 2 - 8Mhz
+#elif defined (SPI_4_MHZ)
+  SPSR = 0x0; //FCK / 4 - 4Mhz
+#else
+  SPSR = 0x0; //FCK / 4 - 4Mhz
+#endif
 
 
 }
