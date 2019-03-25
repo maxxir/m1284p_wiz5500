@@ -32,17 +32,6 @@
 #include "spi.h"
 #include "globals.h"
 
-//#include "contiki-conf.h"
-
-/*
- * On the Tmote sky access to I2C/SPI/UART0 must always be
- * exclusive. Set spi_busy so that interrupt handlers can check if
- * they are allowed to use the bus or not. Only the CC2420 radio needs
- * this in practice.
- * 
- */
-unsigned char spi_busy = 0;
-
 /*
  * Initialize SPI bus.
  */
