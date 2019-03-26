@@ -5,9 +5,16 @@
  *      Author: maxx
  */
 /*
- * 21.TODO: Example TFTP client + SD card FATFS (for reading and saving a file from PC TFTP server).
+ * 21.Example TFTP client + SD card FATFS (for reading and saving a file from PC TFTP server).
 ** After pressing the SW1 button, it reads the “readme.txt” file from the PC TFTP server and saves it on the SD card.
  * Then prints out it contents head in a serial terminal.
+ * TODO:
+ * OK(v1.1) 1. Print-out received file from TFTP to serial console (small file < 512 bytes OK).
+ * 2. Print-out received file from TFTP to serial console (multi-packet files > 512 bytes).
+ * 3. Write-in data to SD-card file "readme_txt".
+ *
+ * Remark:
+ * Checked with PC tftp-server (WIN7) - tftpd64.exe
  */
 
 #include <avr/io.h>
@@ -53,7 +60,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.0 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 25/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.1 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 25/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -96,19 +103,19 @@ int freeRam (void)
 //ISR (TIMER0_COMP_vect )
 ISR (TIMER0_COMPA_vect)
 {
-	static uint8_t fatfs_10ms;
+	static uint16_t tftp_1sec;
 	// Compare match Timer0
 	// Here every 1ms
 	_millis++; // INC millis tick
 	// Тест мигаем при в ходе в прерывание
 	// 500Hz FREQ OUT
 	// LED_TGL;
-	if(++fatfs_10ms > 9 )
+	if(++tftp_1sec > 999)
 	{
-		//Here every 10ms
-		fatfs_10ms = 0;
-		//Timer++;			/* Performance counter for this module (for FatFS test) */
-		disk_timerproc(); // FAT FS timing func
+		//Here every 1 sec
+		tftp_1sec = 0;
+		//TFTP time handler
+		tftp_timeout_handler();
 	}
 }
 
@@ -209,8 +216,8 @@ uint16_t adc_read(uint8_t channel)
 
 
 //***************** TFTP client INIT: BEGIN
-uint8_t g_socket_rcv_buf[MAX_MTU_SIZE];
-uint8_t g_op_mode = NORMAL_MODE;
+uint8_t g_tftp_socket_rcv_buf[MAX_MTU_SIZE];
+uint8_t g_tftp_op_mode = NORMAL_MODE;
 uint8_t tftp_filename[50];
 uint32_t tftp_server;
 //***************** TFTP client INIT: END
@@ -517,7 +524,7 @@ int main()
 	print_network_information();
 
 	//TFTP init
-	TFTP_init(SOCK_TFTP, g_socket_rcv_buf);
+	TFTP_init(SOCK_TFTP, g_tftp_socket_rcv_buf);
 
 
 	/* Loopback Test: TCP Server and UDP */
@@ -532,8 +539,10 @@ int main()
 		/*
 		 * https://www.hw-group.com/software/hercules-setup-utility
 		 * */
+		/*
 		loopback_tcps(SOCK_TCPS,ethBuf0,PORT_TCPS);
 		loopback_udps(SOCK_UDPS,ethBuf0,PORT_UDPS);
+		*/
 
 		//loopback_ret = loopback_tcpc(SOCK_TCPS, gDATABUF, destip, destport);
 		//if(loopback_ret < 0) printf("loopback ret: %ld\r\n", loopback_ret); // TCP Socket Error code
@@ -557,25 +566,31 @@ int main()
 					printf("\r\n########## SW1 was pressed.\r\n");
 					//strncpy(tftp_filename, 0x00, 50);
 					memset(tftp_filename, 0x0, 50);
-					strncpy(tftp_filename, "test.txt", 8);
+					//strncpy(tftp_filename, "test.txt", 8);
+					//strncpy(tftp_filename, "README.md", 9);
+					strncpy(tftp_filename, "tftpd32.ini", 11);
 
 					tftp_server = ((uint32_t)tftp_destip[0] << 24) | ((uint32_t)tftp_destip[1] << 16) | ((uint32_t)tftp_destip[2] << 8) | ((uint32_t)tftp_destip[3]);
 
 					PRINTF("TFTP IP address : %d.%d.%d.%d\r\n",tftp_destip[0],tftp_destip[1],tftp_destip[2],tftp_destip[3]);
-					PRINTF("TFTP IP address (32 bit) : %lu\r\n",tftp_server);
+					PRINTF("TFTP IP address (32 bit) : 0x%lX\r\n",tftp_server);
 
 
-/*
+
 					TFTP_read_request(tftp_server, tftp_filename);
 
 					uint8_t _ret = 0;
-					while(1) {
+					//while(1) {
+					uint8_t i = 3;
+					while(i--){
 						wdt_reset();
 						_ret = TFTP_run();
 						if(_ret != TFTP_PROGRESS)
 							break;
+						_delay_ms(1);//Just for debug
 					}
-*/
+					_delay_ms(1000);//Just for debug
+
 					//!! Debug only
 					//PRINTF("SW1 is pressed\r\nADC0/PA0 is: %u\r\n", adc_read(0));
 					//PRINTF("SW1 is pressed\r\n");

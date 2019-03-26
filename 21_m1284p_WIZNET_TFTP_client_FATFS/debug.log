@@ -1,3 +1,18 @@
 ########## SW1 was pressed.
 TFTP IP address : 192.168.0.100
-TFTP IP address (32 bit) : 3232235620
+TFTP IP address (32 bit) : 0xC0A80064
+[TFTP_read_request] Set Tftp Server : 0xc0a80064
+>> TFTP RRQ : FileName(test.txt), Mode(octet)
+[recv_tftp_packet] Set Server Port : 49769
+<< TFTP_OACK : 
+>> TFTP ACK : Block Number(0)
+<< TFTP_DATA : opcode(3), block_num(1)
+++Data #1-109:
+#1 Hello to TFTP server!
+#2 Hello to TFTP server again!
+#3 It works!
+#4 New string for test..
+#5 Bumped :))
+
+
+>> TFTP ACK : Block Number(1)

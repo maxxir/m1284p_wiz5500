@@ -26,7 +26,16 @@ void save_data(uint8_t *data, uint32_t data_len, uint16_t block_number)
 	//Nothing to do with received data yet..
 	//TODO: Add your own handler here
 	//Print out data as string
-	PRINTF("Data #%d-%lu:\r\n%s\r\n", block_number, data_len, data);
+	/*
+	uint8_t _tmp_msg[256] = "\0";
+	memset(_tmp_msg, 0x0, 256);
+	strncpy(_tmp_msg, data, data_len);
+	*/
+	uint8_t * str;
+	str = data;
+	str += data_len;
+	*str = 0x0;
+	PRINTF("++Data #%d-%lu:\r\n%s\r\n", block_number, data_len, data);
 }
 #endif
 
@@ -537,7 +546,7 @@ static void recv_tftp_packet(uint8_t *packet, uint32_t packet_len, uint32_t from
 	if(from_ip != get_server_ip()) {
 #ifdef __TFTP_DEBUG__
 		DBG_PRINT(ERROR_DBG, "[%s] Server IP faults\r\n", __func__);
-		DBG_PRINT(ERROR_DBG, "from IP : %08x, Server IP : %08x\r\n", from_ip, get_server_ip());
+		DBG_PRINT(ERROR_DBG, "from IP : 0x%08lX, Server IP : 0x%08lX\r\n", from_ip, get_server_ip());
 #endif
 		return;
 	}
@@ -548,7 +557,7 @@ static void recv_tftp_packet(uint8_t *packet, uint32_t packet_len, uint32_t from
 	if((get_tftp_state() == STATE_WRQ) || (get_tftp_state() == STATE_RRQ)) {
 		set_server_port(from_port);
 #ifdef __TFTP_DEBUG__
-		DBG_PRINT(INFO_DBG, "[%s] Set Server Port : %d\r\n", __func__, from_port);
+		DBG_PRINT(INFO_DBG, "[%s] Set Server Port : %u\r\n", __func__, from_port);
 #endif
 	}
 
@@ -574,7 +583,7 @@ static void recv_tftp_packet(uint8_t *packet, uint32_t packet_len, uint32_t from
 			break;
 
 		default :
-			// Unknown Mesage
+			// Unknown Message
 			break;
 	}
 }
@@ -654,7 +663,7 @@ void TFTP_read_request(uint32_t server_ip, uint8_t *filename)
 {
 	set_server_ip(server_ip);
 #ifdef __TFTP_DEBUG__
-	DBG_PRINT(INFO_DBG, "[%s] Set Tftp Server : %x\r\n", __func__, server_ip);
+	DBG_PRINT(INFO_DBG, "[%s] Set Tftp Server : 0x%lx\r\n", __func__, server_ip);
 #endif
 
 	g_progress_state = TFTP_PROGRESS;
