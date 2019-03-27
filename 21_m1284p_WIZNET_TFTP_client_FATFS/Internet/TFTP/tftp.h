@@ -36,7 +36,7 @@ FRESULT fr;	// FatFs function common result code
 
 #define DBG_PRINT(level, format, args...)		{ \
 											if(dbg_level & level) \
-												printf(format, ##args); \
+												PRINTF(format, ##args); \
 										}
 
 #define NORMAL_MODE		0
@@ -71,10 +71,10 @@ extern int dbg_level;
 
 /* define */
 #define TFTP_SERVER_PORT		69
-#define TFTP_TEMP_PORT			51000
+#define TFTP_LOCAL_PORT			51000
 #define TFTP_BLK_SIZE			512
 #define MAX_MTU_SIZE			1514
-#define FILE_NAME_SIZE			20
+#define TFTP_FILE_NAME_SIZE			20
 
 //#define __TFTP_DEBUG__
 

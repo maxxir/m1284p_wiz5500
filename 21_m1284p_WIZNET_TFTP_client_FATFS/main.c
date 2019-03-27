@@ -218,7 +218,7 @@ uint16_t adc_read(uint8_t channel)
 //***************** TFTP client INIT: BEGIN
 uint8_t g_tftp_socket_rcv_buf[MAX_MTU_SIZE];
 uint8_t g_tftp_op_mode = NORMAL_MODE;
-uint8_t tftp_filename[50];
+uint8_t tftp_filename[TFTP_FILE_NAME_SIZE];
 uint32_t tftp_server;
 //***************** TFTP client INIT: END
 
@@ -564,11 +564,10 @@ int main()
 
 
 					printf("\r\n########## SW1 was pressed.\r\n");
-					//strncpy(tftp_filename, 0x00, 50);
-					memset(tftp_filename, 0x0, 50);
-					//strncpy(tftp_filename, "test.txt", 8);
-					//strncpy(tftp_filename, "README.md", 9);
-					strncpy(tftp_filename, "tftpd32.ini", 11);
+					memset(tftp_filename, 0x0, 20);
+					//strncpy(tftp_filename, "test.txt", TFTP_FILE_NAME_SIZE);
+					strncpy(tftp_filename, "README.md", TFTP_FILE_NAME_SIZE);
+					//strncpy(tftp_filename, "tftpd32.ini", TFTP_FILE_NAME_SIZE);
 
 					tftp_server = ((uint32_t)tftp_destip[0] << 24) | ((uint32_t)tftp_destip[1] << 16) | ((uint32_t)tftp_destip[2] << 8) | ((uint32_t)tftp_destip[3]);
 
@@ -587,12 +586,11 @@ int main()
 						_ret = TFTP_run();
 						if(_ret != TFTP_PROGRESS)
 							break;
-						_delay_ms(1);//Just for debug
+						//_delay_ms(1);//Just for debug
 					}
-					_delay_ms(1000);//Just for debug
+					_delay_ms(1000);
 
 					//!! Debug only
-					//PRINTF("SW1 is pressed\r\nADC0/PA0 is: %u\r\n", adc_read(0));
 					//PRINTF("SW1 is pressed\r\n");
 
 

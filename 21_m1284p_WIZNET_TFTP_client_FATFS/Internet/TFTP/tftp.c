@@ -26,23 +26,18 @@ void save_data(uint8_t *data, uint32_t data_len, uint16_t block_number)
 	//Nothing to do with received data yet..
 	//TODO: Add your own handler here
 	//Print out data as string
-	/*
-	uint8_t _tmp_msg[256] = "\0";
-	memset(_tmp_msg, 0x0, 256);
-	strncpy(_tmp_msg, data, data_len);
-	*/
 	uint8_t * str;
 	str = data;
 	str += data_len;
 	*str = 0x0;
-	PRINTF("++Data #%d-%lu:\r\n%s\r\n", block_number, data_len, data);
+	PRINTF("\r\n++Data #%d-%lu:\r\n%s\r\n", block_number, data_len, data);
 }
 #endif
 
 /* Global Variable ----------------------------------------------*/
 static int		g_tftp_socket = -1;
 
-static uint8_t g_filename[FILE_NAME_SIZE];
+static uint8_t g_filename[TFTP_FILE_NAME_SIZE];
 
 static uint32_t g_server_ip = 0;
 static uint16_t g_server_port = 0;
@@ -66,7 +61,7 @@ static TFTP_OPTION default_tftp_opt = {
 uint8_t g_progress_state = TFTP_PROGRESS;
 
 #ifdef __TFTP_DEBUG__
-int dbg_level = (INFO_DBG | ERROR_DBG | IPC_DBG);
+int dbg_level = (INFO_DBG | ERROR_DBG | IPC_DBG | DEBUG_DBG);
 #endif
 
 /* static function define ---------------------------------------*/
@@ -145,9 +140,9 @@ static int open_tftp_socket(uint8_t sock)
 {
 	uint8_t sd, sck_state;
 
-	sd = socket(sock, Sn_MR_UDP, 51000, SF_IO_NONBLOCK);
+	sd = socket(sock, Sn_MR_UDP, TFTP_LOCAL_PORT, SF_IO_NONBLOCK);
 	if(sd != sock) {
-		//DBG_PRINT(ERROR_DBG, "[%s] socket error\r\n", __func__);
+		DBG_PRINT(ERROR_DBG, "[%s] socket error\r\n", __func__);
 		return -1;
 	}
 
@@ -155,7 +150,7 @@ static int open_tftp_socket(uint8_t sock)
 		getsockopt(sd , SO_STATUS, &sck_state);
 	} while(sck_state != SOCK_UDP);
 
-	return sd;
+	return (int)sd;
 }
 
 static int send_udp_packet(int socket, uint8_t *packet, uint32_t len, uint32_t ip, uint16_t port)
@@ -593,8 +588,21 @@ void TFTP_init(uint8_t socket, uint8_t *buf)
 {
 	init_tftp();
 
-	g_tftp_socket = open_tftp_socket(socket);
 	g_tftp_rcv_buf = buf;
+	g_tftp_socket = open_tftp_socket(socket);
+	if(g_tftp_socket == -1)
+	{
+		//Here when TFTP socket open OK
+		DBG_PRINT(ERROR_DBG, "--[%s] TFTP socket[%d] open error\r\nReboot the board..\r\n", __func__, socket);
+		while(1)
+		{
+			;
+		}
+	}
+	else
+	{
+		DBG_PRINT(INFO_DBG, "++[%s] TFTP socket[%d]:%u open success\r\n", __func__, g_tftp_socket, TFTP_LOCAL_PORT);
+	}
 }
 
 void TFTP_exit(void)
@@ -663,7 +671,7 @@ void TFTP_read_request(uint32_t server_ip, uint8_t *filename)
 {
 	set_server_ip(server_ip);
 #ifdef __TFTP_DEBUG__
-	DBG_PRINT(INFO_DBG, "[%s] Set Tftp Server : 0x%lx\r\n", __func__, server_ip);
+	DBG_PRINT(INFO_DBG, "[%s] Set Tftp Server : 0x%lX\r\n", __func__, server_ip);
 #endif
 
 	g_progress_state = TFTP_PROGRESS;
