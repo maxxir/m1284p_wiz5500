@@ -21,6 +21,17 @@
 #ifdef F_STORAGE
 extern void save_data(uint8_t *data, uint32_t data_len, uint16_t block_number);
 
+static uint32_t g_tftp_save_data = 0;
+
+uint32_t get_tftp_received_size(void)
+{
+	return g_tftp_save_data;
+}
+
+void clear_tftp_received_size(void)
+{
+	g_tftp_save_data = 0;
+}
 void save_data(uint8_t *data, uint32_t data_len, uint16_t block_number)
 {
 	//Nothing to do with received data yet..
@@ -30,6 +41,7 @@ void save_data(uint8_t *data, uint32_t data_len, uint16_t block_number)
 	str = data;
 	str += data_len;
 	*str = 0x0;
+	g_tftp_save_data += data_len; //Store received data size
 	PRINTF("\r\n++Data #%d-%lu:\r\n%s\r\n", block_number, data_len, data);
 }
 #endif

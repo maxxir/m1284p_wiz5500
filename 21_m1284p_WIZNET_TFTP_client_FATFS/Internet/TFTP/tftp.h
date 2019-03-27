@@ -102,6 +102,8 @@ void TFTP_exit(void);
 int TFTP_run(void);
 void TFTP_read_request(uint32_t server_ip, uint8_t *filename);
 void tftp_timeout_handler(void);
+uint32_t get_tftp_received_size(void);
+void clear_tftp_received_size(void);
 
 #ifdef __cplusplus
 }

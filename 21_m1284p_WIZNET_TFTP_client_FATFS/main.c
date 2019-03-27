@@ -10,8 +10,9 @@
  * Then prints out it contents head in a serial terminal.
  * TODO:
  * OK(v1.1) 1. Print-out received file from TFTP to serial console (small file < 512 bytes OK).
- * 2. Print-out received file from TFTP to serial console (multi-packet files > 512 bytes).
+ * OK(v1.2) 2. Print-out received file from TFTP to serial console (multi-packet files > 512 bytes).
  * 3. Write-in data to SD-card file "readme_txt".
+ * 4. Add handlers for CHK_RAM_LEAKAGE && CHK_UPTIME.
  *
  * Remark:
  * Checked with PC tftp-server (WIN7) - tftpd64.exe
@@ -60,7 +61,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.1 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 25/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 27/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -565,9 +566,10 @@ int main()
 
 					printf("\r\n########## SW1 was pressed.\r\n");
 					memset(tftp_filename, 0x0, 20);
-					//strncpy(tftp_filename, "test.txt", TFTP_FILE_NAME_SIZE);
-					strncpy(tftp_filename, "README.md", TFTP_FILE_NAME_SIZE);
+					strncpy(tftp_filename, "test.txt", TFTP_FILE_NAME_SIZE);
+					//strncpy(tftp_filename, "README.md", TFTP_FILE_NAME_SIZE);
 					//strncpy(tftp_filename, "tftpd32.ini", TFTP_FILE_NAME_SIZE);
+					//strncpy(tftp_filename, "ff_lfn_required.c", TFTP_FILE_NAME_SIZE);
 
 					tftp_server = ((uint32_t)tftp_destip[0] << 24) | ((uint32_t)tftp_destip[1] << 16) | ((uint32_t)tftp_destip[2] << 8) | ((uint32_t)tftp_destip[3]);
 
@@ -577,23 +579,34 @@ int main()
 
 
 					TFTP_read_request(tftp_server, tftp_filename);
+					clear_tftp_received_size();
 
 					uint8_t _ret = 0;
-					//while(1) {
-					uint8_t i = 3;
-					while(i--){
+					while(1){
 						wdt_reset();
 						_ret = TFTP_run();
 						if(_ret != TFTP_PROGRESS)
+						{
+							//Print-out result TFTP complete
+							if(_ret == TFTP_SUCCESS)
+							{
+								PRINTF("\r\n++TFTP transfer complete:[%u] SUCCESS, received %lu bytes\r\n", _ret, get_tftp_received_size());
+							}
+							else if(_ret == TFTP_FAIL)
+							{
+								PRINTF("\r\n--TFTP transfer complete:[%u] FAIL, received %lu bytes\r\n", _ret, get_tftp_received_size());
+							}
+							else
+							{
+								PRINTF("\r\n??TFTP transfer complete:[%u] UNKNOWN, received %lu bytes\r\n\r\n", _ret, get_tftp_received_size());
+							}
 							break;
-						//_delay_ms(1);//Just for debug
+						}
 					}
 					_delay_ms(1000);
 
 					//!! Debug only
 					//PRINTF("SW1 is pressed\r\n");
-
-
 				}//if(prev_sw1)
 				prev_sw1 = 0; // Store SW1 state for next iteration
 			}//if(!sw1_read())

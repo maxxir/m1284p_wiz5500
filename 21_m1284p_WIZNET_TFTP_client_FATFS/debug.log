@@ -1,12 +1,15 @@
 ########## SW1 was pressed.
 TFTP IP address : 192.168.0.100
 TFTP IP address (32 bit) : 0xC0A80064
-[TFTP_read_request] Set Tftp Server : 0xc0a80064
+[TFTP_read_request] Set Tftp Server : 0xC0A80064
 >> TFTP RRQ : FileName(test.txt), Mode(octet)
-[recv_tftp_packet] Set Server Port : 49769
+[recv_tftp_packet] Server IP faults
+from IP : 0x4B041004, Server IP : 0xC0A80064
+[recv_tftp_packet] Set Server Port : 53664
 << TFTP_OACK : 
 >> TFTP ACK : Block Number(0)
 << TFTP_DATA : opcode(3), block_num(1)
+
 ++Data #1-109:
 #1 Hello to TFTP server!
 #2 Hello to TFTP server again!
@@ -16,3 +19,13 @@ TFTP IP address (32 bit) : 0xC0A80064
 
 
 >> TFTP ACK : Block Number(1)
+
+++TFTP transfer complete:[2] SUCCESS, received 109 bytes
+
+..
+Last attemp on large file result (ff_lfn_required.c : 243509):
+
+>> TFTP ACK : Block Number(476)
+
+++TFTP transfer complete:[2] SUCCESS, received 243509 bytes
+
