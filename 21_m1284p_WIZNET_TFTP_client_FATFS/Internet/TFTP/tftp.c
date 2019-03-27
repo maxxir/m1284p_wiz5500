@@ -19,7 +19,7 @@
 
 /* Extern Functions ---------------------------------------------*/
 #ifdef F_STORAGE
-extern void save_data(uint8_t *data, uint32_t data_len, uint16_t block_number);
+extern uint8_t save_data(uint8_t *data, uint32_t data_len, uint16_t block_number);
 
 static uint32_t g_tftp_save_data = 0;
 
@@ -32,17 +32,53 @@ void clear_tftp_received_size(void)
 {
 	g_tftp_save_data = 0;
 }
-void save_data(uint8_t *data, uint32_t data_len, uint16_t block_number)
+
+void close_tftp_file(void)
 {
+	if(tftp_fr == FR_OK)
+	{
+		tftp_fr = f_close(&tftp_fil);
+		if(tftp_fr != FR_OK){
+			PRINTF("--f_close failed\r\n");
+		}
+	}
+}
+
+uint8_t save_data(uint8_t *data, uint32_t data_len, uint16_t block_number)
+{
+	uint8_t save_data_result = 0;
+#ifdef TFTP_RCV_DBG
 	//Nothing to do with received data yet..
 	//TODO: Add your own handler here
-	//Print out data as string
+	//Print out received data as string
 	uint8_t * str;
 	str = data;
 	str += data_len;
 	*str = 0x0;
-	g_tftp_save_data += data_len; //Store received data size
 	PRINTF("\r\n++Data #%d-%lu:\r\n%s\r\n", block_number, data_len, data);
+#endif
+	//Calculate received data size
+	g_tftp_save_data += data_len;
+	//Save TFTP block to file
+	if(tftp_fr == FR_OK)
+	{
+		uint16_t _blocklen;
+		tftp_fr = 	f_write(&tftp_fil, data, (UINT)data_len, &_blocklen);
+		if(tftp_fr != FR_OK){
+			PRINTF("--f_write failed #2\r\n");
+			save_data_result = 2;
+		}
+		else
+		{
+			f_sync(&tftp_fil); //Flush data to SDCARD from cache
+		}
+	}
+	else
+	{
+		PRINTF("--f_write failed #1\r\n");
+		save_data_result = 1;
+	}
+	return save_data_result;
 }
 #endif
 
@@ -80,6 +116,13 @@ int dbg_level = (INFO_DBG | ERROR_DBG | IPC_DBG | DEBUG_DBG);
 static void set_filename(uint8_t *file, uint32_t file_size)
 {
 	memcpy(g_filename, file, file_size);
+#if defined(F_STORAGE)
+	//Rewrite file onto SD-card
+	tftp_fr = f_open(&tftp_fil, (const char *)g_filename, FA_CREATE_ALWAYS | FA_WRITE);
+	if(tftp_fr != FR_OK){
+		PRINTF("--f_open failed\r\n");
+	}
+#endif
 }
 
 static inline void set_server_ip(uint32_t ipaddr)
@@ -444,7 +487,10 @@ static void recv_tftp_data(uint8_t *msg, uint32_t msg_len)
 				set_tftp_state(STATE_DATA);
 				set_block_number(data->block_num);
 #ifdef F_STORAGE
-				save_data(data->data, msg_len - 4, data->block_num);
+				if (save_data(data->data, msg_len - 4, data->block_num))
+				{
+					g_progress_state = TFTP_FAIL;
+				}
 #endif
 				tftp_cancel_timeout();
 			}
@@ -461,7 +507,11 @@ static void recv_tftp_data(uint8_t *msg, uint32_t msg_len)
 			if(data->block_num == (get_block_number() + 1)) {
 				set_block_number(data->block_num);
 #ifdef F_STORAGE
-				save_data(data->data, msg_len - 4, data->block_num);
+				if(save_data(data->data, msg_len - 4, data->block_num))
+				{
+					g_progress_state = TFTP_FAIL;
+
+				}
 #endif
 				tftp_cancel_timeout();
 			}
@@ -671,10 +721,25 @@ int TFTP_run(void)
 #ifdef __TFTP_DEBUG__
 		DBG_PRINT(ERROR_DBG, "[%s] recv_udp_packet error\r\n", __func__);
 #endif
+#ifdef F_STORAGE
+		if(g_progress_state != TFTP_PROGRESS)
+		{
+			//Close TFTP file if transfer complete
+			close_tftp_file();
+		}
+#endif
 		return g_progress_state;
 	}
 
 	recv_tftp_packet(g_tftp_rcv_buf, len, from_ip, from_port);
+
+#ifdef F_STORAGE
+	if(g_progress_state != TFTP_PROGRESS)
+	{
+		//Close TFTP file if transfer complete
+		close_tftp_file();
+	}
+#endif
 
 	return g_progress_state;
 }

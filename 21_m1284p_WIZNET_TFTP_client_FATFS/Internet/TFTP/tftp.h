@@ -17,13 +17,14 @@ extern "C" {
 
 #define F_APP_TFTP
 #define __TFTP_DEBUG__
+//define TFTP_RCV_DBG /* To print-out received TFTP packet as string data */
 
 #define F_STORAGE // If your target support a storage, you have to activate this feature and implement.
 
 #if defined(F_STORAGE)
-#include "ff.h"
-FIL fil;	// FatFs File objects
-FRESULT fr;	// FatFs function common result code
+#include "../../ff/ff.h"
+static FIL tftp_fil;	// FatFs File objects
+static FRESULT tftp_fr;	// FatFs function common result code
 #endif
 
 

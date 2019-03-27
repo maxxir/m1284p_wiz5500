@@ -11,8 +11,10 @@
  * TODO:
  * OK(v1.1) 1. Print-out received file from TFTP to serial console (small file < 512 bytes OK).
  * OK(v1.2) 2. Print-out received file from TFTP to serial console (multi-packet files > 512 bytes).
- * 3. Write-in data to SD-card file "readme_txt".
- * 4. Add handlers for CHK_RAM_LEAKAGE && CHK_UPTIME.
+ * OK(v1.3) 3. Write-in data to SD-card file "readme_txt" and another patterns.
+ * 4. Print out "readme.txt" contents head (from SD-Card ) in a serial terminal.
+ * 5. Add handlers for CHK_RAM_LEAKAGE && CHK_UPTIME.
+ * 6. Clear the code from the loopback sockets
  *
  * Remark:
  * Checked with PC tftp-server (WIN7) - tftpd64.exe
@@ -61,7 +63,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 27/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.3 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 27/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -536,18 +538,6 @@ int main()
 		//Here at least every 1sec
 		wdt_reset(); // WDT reset at least every sec
 
-		//Use Hercules Terminal to check loopback tcp:5000 and udp:3000
-		/*
-		 * https://www.hw-group.com/software/hercules-setup-utility
-		 * */
-		/*
-		loopback_tcps(SOCK_TCPS,ethBuf0,PORT_TCPS);
-		loopback_udps(SOCK_UDPS,ethBuf0,PORT_UDPS);
-		*/
-
-		//loopback_ret = loopback_tcpc(SOCK_TCPS, gDATABUF, destip, destport);
-		//if(loopback_ret < 0) printf("loopback ret: %ld\r\n", loopback_ret); // TCP Socket Error code
-
 		if((millis()-timer_link_1sec)> 1000)
 		{
 			//here every 1 sec
@@ -565,11 +555,12 @@ int main()
 
 
 					printf("\r\n########## SW1 was pressed.\r\n");
-					memset(tftp_filename, 0x0, 20);
-					strncpy(tftp_filename, "test.txt", TFTP_FILE_NAME_SIZE);
-					//strncpy(tftp_filename, "README.md", TFTP_FILE_NAME_SIZE);
+					memset(tftp_filename, 0x0, TFTP_FILE_NAME_SIZE);
+					//!!Don't forget about 8.3 file name rule!!
+					//strncpy(tftp_filename, "test.txt", TFTP_FILE_NAME_SIZE);
+					strncpy(tftp_filename, "README.md", TFTP_FILE_NAME_SIZE);
 					//strncpy(tftp_filename, "tftpd32.ini", TFTP_FILE_NAME_SIZE);
-					//strncpy(tftp_filename, "ff_lfn_required.c", TFTP_FILE_NAME_SIZE);
+					//strncpy(tftp_filename, "ff_lfn.c", TFTP_FILE_NAME_SIZE);
 
 					tftp_server = ((uint32_t)tftp_destip[0] << 24) | ((uint32_t)tftp_destip[1] << 16) | ((uint32_t)tftp_destip[2] << 8) | ((uint32_t)tftp_destip[3]);
 
