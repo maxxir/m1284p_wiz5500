@@ -13,8 +13,10 @@
  * OK(v1.2) 2. Print-out received file from TFTP to serial console (multi-packet files > 512 bytes).
  * OK(v1.3) 3. Write-in data to SD-card file "test.txt" and another patterns.
  * OK(v1.4) 4. Print out "test.txt" contents head (from SD-Card ) in a serial terminal.
- * 5. Add handlers for CHK_RAM_LEAKAGE && CHK_UPTIME.
- * 6.?? Clear the code from the loopback sockets (Is it really need to do?)
+ * OK(v1.5) 5. Add handlers for CHK_RAM_LEAKAGE && CHK_UPTIME.
+ * 6. Add FSM for TFTP client in main loop
+ * 7. All my debug code in tftp.c replace PRINTF(..) to DBG_PRINT(INFO_DBG, ..)
+ * 8.?? Clear the code from the loopback sockets (Is it really need to do?)
  *
  * Remark:
  * Checked with PC tftp-server (WIN7) - tftpd64.exe
@@ -63,7 +65,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.4 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 28/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.5 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 29/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -531,9 +533,9 @@ int main()
 	TFTP_init(SOCK_TFTP, g_tftp_socket_rcv_buf);
 
 
-	/* Loopback Test: TCP Server and UDP */
 	// Test for Ethernet data transfer validation
 	uint32_t timer_link_1sec = millis();
+	uint32_t timer_uptime_60sec = millis();
 	while(1)
 	{
 		//Here at least every 1sec
@@ -613,14 +615,6 @@ int main()
 				prev_sw1 = 1;// Store SW1 state for next iteration
 			}//if(!sw1_read())else..
 
-			//TODO: deprecated, insert new code
-			//Printout RAM usage every 1 minute
-    		static uint16_t j_ram = 0;
-    		if(j_ram++%60 == 0)
-    		{
-    			PRINTF(">> Free RAM is: %d bytes\r\n", freeRam());
-    		}
-
     		//Check ETHERNET PHY link
     		if(wizphy_getphylink() == PHY_LINK_ON)
 			{
@@ -632,6 +626,22 @@ int main()
 			}
 
 		}
+
+		if((millis()-timer_uptime_60sec)> 60000)
+		{
+			//here every 60 sec
+			timer_uptime_60sec = millis();
+#ifdef CHK_RAM_LEAKAGE
+			//Printout RAM usage every 1 minute
+   			PRINTF(">> Free RAM is: %d bytes\r\n", freeRam());
+#endif
+
+#ifdef CHK_UPTIME
+			//Printout RAM usage every 1 minute
+   			PRINTF(">> Uptime %lu sec\r\n", millis()/1000);
+#endif
+		}
+
 
 	}
 	return 0;

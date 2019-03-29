@@ -69,4 +69,7 @@ extern uint8_t DNS_2nd[4];
 
 extern uint8_t tftp_destip[4];
 
+#define CHK_RAM_LEAKAGE
+#define CHK_UPTIME
+
 #endif /* GLOBALS_H_ */
