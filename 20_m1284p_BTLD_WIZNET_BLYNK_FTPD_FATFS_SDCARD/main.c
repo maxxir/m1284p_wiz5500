@@ -295,7 +295,7 @@ void pwm8bit_timer2_init(void)
 {
 	//PWM on TIMER2 (PD7/OC2A) &&  TIMER2 (PD6/OC2B)
 	// PHASE CORRECT PWM 8-bit mode setup
-	// 31.25kHz FREQ OUT
+	// 31.25kHz FREQ OUT / 0.98kHz FREQ OUT
 
 	// Set PD7 to OUT
 	DDRD |= (1<<7);
@@ -317,42 +317,17 @@ void pwm8bit_timer2_init(void)
 	/*
 	 * clkI/O/1 (No prescaling)
 	*/
-	TCCR2B = (1<<CS20); // 16Mhz input
+	//TCCR2B = (1<<CS20); // 16Mhz input
+
+	/*
+	 * clkI/O/32 (1:32 prescaling)
+	*/
+	TCCR2B = (1<<CS21)|(1<<CS20); // 16Mhz input / 32
 
 	OCR2A = 0x0;// SET output duty cycle OCR2A 0%
 	OCR2B = 0x0;// SET output duty cycle OCR2B 0%
 }
 
-void pwm8bitfast_timer2_init(void)
-{
-	//PWM on TIMER2 (PD7/OC2A) && (PD6/OC2B )
-	// FAST PWM 8-bit mode setup
-	// 62.5kHz FREQ OUT
-
-	// Set PD7 to OUT
-	DDRD |= (1<<7);
-	// Set PD6 to OUT
-	DDRD |= (1<<6);
-	/*
-	 * Compare Output Mode, Fast PWM
-	 * Clear OCnA/OCnB/OCnC on compare match,
-	 * Set OCnA/OCnB/OCnC at TOP
-	*/
-	TCCR2A = (1<<COM2A1)|(1<<COM2B1);
-
-	/*
-	 * FAST PWM 8-bit
-	*/
-	TCCR2A |= (1<<WGM21)|(1<<WGM20);
-
-	/*
-	 * clkI/O/1 (No prescaling)
-	*/
-	TCCR2B = (1<<CS20); // 16Mhz input
-
-	OCR2A = 0x0;// SET output OCR2A duty cycle 0%
-	OCR2B = 0x0;// SET output OCR2B duty cycle 0%
-}
 //*********************************Timer2 PWM: END
 
 
@@ -937,8 +912,7 @@ static void avr_init(void)
 
 	sw1_conf();//SW1 internal pull-up
 
-	//pwm8bitfast_timer2_init(); // PD7/OC2A used as FAST 8bit PWM (62.5kHz FREQ OUT)
-	pwm8bit_timer2_init(); // PD7/OC2A used as PHASE CORRECT 8bit PWM (31.25kHz FREQ OUT)
+	pwm8bit_timer2_init(); // PD7/OC2A used as PHASE CORRECT 8bit PWM (0.98kHz FREQ OUT)
 
 	sei(); //re-enable global interrupts
 
