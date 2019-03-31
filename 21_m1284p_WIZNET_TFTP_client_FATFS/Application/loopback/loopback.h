@@ -6,6 +6,8 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stdio.h>
+#include "../../globals.h"
 
 /* Loopback test debug message printout enable */
 #define	_LOOPBACK_DEBUG_

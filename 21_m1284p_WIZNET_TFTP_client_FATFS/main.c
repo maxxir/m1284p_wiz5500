@@ -6,7 +6,7 @@
  */
 /*
  * 21.Example TFTP client + SD card FATFS (for reading and saving a file from PC TFTP server).
-** After pressing the SW1 button, it reads the “readme.txt” file from the PC TFTP server and saves it on the SD card.
+** After pressing the SW1 button, it reads the “readme.txt” (and another commented patterns) file from the PC TFTP server and saves it on the SD card.
  * Then prints out it contents head in a serial terminal.
  * TODO:
  * OK(v1.1) 1. Print-out received file from TFTP to serial console (small file < 512 bytes OK).
@@ -14,8 +14,9 @@
  * OK(v1.3) 3. Write-in data to SD-card file "test.txt" and another patterns.
  * OK(v1.4) 4. Print out "test.txt" contents head (from SD-Card ) in a serial terminal.
  * OK(v1.5) 5. Add handlers for CHK_RAM_LEAKAGE && CHK_UPTIME.
- * 6. Add FSM for TFTP client in main loop
+ * OK(v1.7) 6. Add FSM for TFTP client in main loop
  * OK(v1.6) 7. All my debug code in tftp.c replace PRINTF(..) to DBG_PRINT(INFO_DBG, ..)
+ * OK(v1.7) 8. Add and check standard WIZNET TCP/UDP loopback
  *
  * Remark:
  * Checked with PC tftp-server (WIN7) - tftpd64.exe
@@ -67,7 +68,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.6 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 31/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.7 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 31/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -227,6 +228,15 @@ uint8_t g_tftp_socket_rcv_buf[MAX_MTU_SIZE];
 uint8_t g_tftp_op_mode = NORMAL_MODE;
 uint8_t tftp_filename[TFTP_FILE_NAME_SIZE];
 uint32_t tftp_server;
+
+typedef enum
+{
+   TFTPC_STOPPED = 0, ///< Stop processing TFTPC protocol
+   TFTPC_RUNNING,      ///<Begin Processing TFTPC protocol
+   TFTPC_DATA_TRANSFER ///<TFTPC transfer data stage
+}tftpc_type;
+tftpc_type tftpc_state = TFTPC_STOPPED;
+
 //***************** TFTP client INIT: END
 
 //***************** WIZCHIP INIT: BEGIN
@@ -482,88 +492,119 @@ int main()
 
 	// Test for Ethernet data transfer validation
 	uint32_t timer_link_1sec = millis();
+	uint32_t timer_sw1_1sec = millis();
 	uint32_t timer_uptime_60sec = millis();
+	uint8_t _ret = 0;
 	while(1)
 	{
 		//Here at least every 1sec
 		wdt_reset(); // WDT reset at least every sec
+
+		//Use Hercules Terminal to check loopback tcp:5000 and udp:3000
+		/*
+		 * https://www.hw-group.com/software/hercules-setup-utility
+		 * */
+		loopback_tcps(SOCK_TCPS,ethBuf0,PORT_TCPS);
+		loopback_udps(SOCK_UDPS,ethBuf0,PORT_UDPS);
+
+		//TFTPC FSM state
+		switch(tftpc_state)
+		{
+			case TFTPC_STOPPED:
+				//Wait here (unblocking) SW1 pressing
+				if((millis()-timer_sw1_1sec)> 1000)
+				{
+					//here every 1 sec
+					timer_sw1_1sec = millis();
+					//!! SW1 pressing action
+					if(!sw1_read())// Check for SW1 pressed every second
+					{
+						// SW1 is pressed
+						//led1_high(); //LED1 ON
+						if(prev_sw1)
+						{
+							//!! Здесь по факту нажатия кнопки (1->0 SW1)
+
+							PRINTF("\r\n########## SW1 was pressed.\r\n");
+							tftpc_state = TFTPC_RUNNING;
+
+							//!! Debug only
+							//PRINTF("SW1 is pressed\r\n");
+						}//if(prev_sw1)
+						prev_sw1 = 0; // Store SW1 state for next iteration
+					}//if(!sw1_read())
+					else
+					{
+						// SW1 is unpressed
+						//led1_low(); // LED1 OFF
+						prev_sw1 = 1;// Store SW1 state for next iteration
+					}//if(!sw1_read())else..
+				}
+				break;
+			case TFTPC_RUNNING:
+
+				memset(tftp_filename, 0x0, TFTP_FILE_NAME_SIZE);
+				//!!Don't forget about 8.3 file name rule!!
+				strncpy(tftp_filename, "test.txt", TFTP_FILE_NAME_SIZE); //pattern#1 test
+				//strncpy(tftp_filename, "README.md", TFTP_FILE_NAME_SIZE);//pattern#2 test
+				//strncpy(tftp_filename, "tftpd32.ini", TFTP_FILE_NAME_SIZE);//pattern#3 test
+				//strncpy(tftp_filename, "ff_lfn.txt", TFTP_FILE_NAME_SIZE);//pattern#4 test
+				//strncpy(tftp_filename, "dir.txt", TFTP_FILE_NAME_SIZE);//pattern#5 test
+
+				tftp_server = ((uint32_t)tftp_destip[0] << 24) | ((uint32_t)tftp_destip[1] << 16) | ((uint32_t)tftp_destip[2] << 8) | ((uint32_t)tftp_destip[3]);
+
+				PRINTF("TFTP IP address : %d.%d.%d.%d\r\n",tftp_destip[0],tftp_destip[1],tftp_destip[2],tftp_destip[3]);
+				PRINTF("TFTP IP address (32 bit) : 0x%lX\r\n",tftp_server);
+
+
+
+				TFTP_read_request(tftp_server, tftp_filename);
+				clear_tftp_received_size();
+
+				tftpc_state = TFTPC_DATA_TRANSFER;
+				break;
+			case TFTPC_DATA_TRANSFER:
+				wdt_reset();
+				_ret = TFTP_run(); //Proceed TFTPC transfer data
+				if(_ret != TFTP_PROGRESS)
+				{
+					//Print-out result TFTP complete
+					if(_ret == TFTP_SUCCESS)
+					{
+						PRINTF("\r\n++TFTP transfer complete:[%u] SUCCESS, received %lu bytes\r\n", _ret, get_tftp_received_size());
+
+						//Print-out head received file
+						fatfs_head_file(tftp_filename);
+
+					}
+					else if(_ret == TFTP_FAIL)
+					{
+						PRINTF("\r\n--TFTP transfer complete:[%u] FAIL, received %lu bytes\r\n", _ret, get_tftp_received_size());
+					}
+					else
+					{
+						PRINTF("\r\n??TFTP transfer complete:[%u] UNKNOWN, received %lu bytes\r\n\r\n", _ret, get_tftp_received_size());
+					}
+					tftpc_state = TFTPC_STOPPED;
+					timer_sw1_1sec = millis();
+				}
+				else
+				{
+					tftpc_state = TFTPC_DATA_TRANSFER; //bulletproof
+				}
+				break;
+			default:
+				tftpc_state = TFTPC_STOPPED;
+				break;
+		}//switch(tftpc_state)
+
 
 		if((millis()-timer_link_1sec)> 1000)
 		{
 			//here every 1 sec
 			timer_link_1sec = millis();
 
-
-			//!! SW1 pressing action
-			if(!sw1_read())// Check for SW1 pressed every second
-			{
-				// SW1 is pressed
-				//led1_high(); //LED1 ON
-				if(prev_sw1)
-				{
-					//!! Здесь по факту нажатия кнопки (1->0 SW1)
-
-
-					PRINTF("\r\n########## SW1 was pressed.\r\n");
-					memset(tftp_filename, 0x0, TFTP_FILE_NAME_SIZE);
-					//!!Don't forget about 8.3 file name rule!!
-					strncpy(tftp_filename, "test.txt", TFTP_FILE_NAME_SIZE); //pattern#1 test
-					//strncpy(tftp_filename, "README.md", TFTP_FILE_NAME_SIZE);//pattern#2 test
-					//strncpy(tftp_filename, "tftpd32.ini", TFTP_FILE_NAME_SIZE);//pattern#3 test
-					//strncpy(tftp_filename, "ff_lfn.txt", TFTP_FILE_NAME_SIZE);//pattern#4 test
-					strncpy(tftp_filename, "dir.txt", TFTP_FILE_NAME_SIZE);//pattern#5 test
-
-					tftp_server = ((uint32_t)tftp_destip[0] << 24) | ((uint32_t)tftp_destip[1] << 16) | ((uint32_t)tftp_destip[2] << 8) | ((uint32_t)tftp_destip[3]);
-
-					PRINTF("TFTP IP address : %d.%d.%d.%d\r\n",tftp_destip[0],tftp_destip[1],tftp_destip[2],tftp_destip[3]);
-					PRINTF("TFTP IP address (32 bit) : 0x%lX\r\n",tftp_server);
-
-
-
-					TFTP_read_request(tftp_server, tftp_filename);
-					clear_tftp_received_size();
-
-					uint8_t _ret = 0;
-					while(1){
-						wdt_reset();
-						_ret = TFTP_run();
-						if(_ret != TFTP_PROGRESS)
-						{
-							//Print-out result TFTP complete
-							if(_ret == TFTP_SUCCESS)
-							{
-								PRINTF("\r\n++TFTP transfer complete:[%u] SUCCESS, received %lu bytes\r\n", _ret, get_tftp_received_size());
-
-								//Print-out head received file
-								fatfs_head_file(tftp_filename);
-
-							}
-							else if(_ret == TFTP_FAIL)
-							{
-								PRINTF("\r\n--TFTP transfer complete:[%u] FAIL, received %lu bytes\r\n", _ret, get_tftp_received_size());
-							}
-							else
-							{
-								PRINTF("\r\n??TFTP transfer complete:[%u] UNKNOWN, received %lu bytes\r\n\r\n", _ret, get_tftp_received_size());
-							}
-							break;
-						}
-					}
-					_delay_ms(1000);
-
-					//!! Debug only
-					//PRINTF("SW1 is pressed\r\n");
-				}//if(prev_sw1)
-				prev_sw1 = 0; // Store SW1 state for next iteration
-			}//if(!sw1_read())
-			else
-			{
-				// SW1 is unpressed
-				//led1_low(); // LED1 OFF
-				prev_sw1 = 1;// Store SW1 state for next iteration
-			}//if(!sw1_read())else..
-
-    		//Check ETHERNET PHY link
+			//Check ETHERNET PHY link
     		if(wizphy_getphylink() == PHY_LINK_ON)
 			{
 				led1_high();
