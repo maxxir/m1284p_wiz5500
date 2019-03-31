@@ -26,4 +26,6 @@ wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac add
 		.dns =  {8,8,8,8},			  // DNS address (google dns)
 		.gw   = {192, 168, 1, 1}, // Gateway address
 		.dhcp = NETINFO_STATIC};    //Static IP configuration
+//PC TFTP server IP
+uint8_t tftp_destip[4] = {192, 168, 1, 81};
 #endif

@@ -39,7 +39,7 @@ void close_tftp_file(void)
 	{
 		tftp_fr = f_close(&tftp_fil);
 		if(tftp_fr != FR_OK){
-			PRINTF("--f_close failed\r\n");
+			DBG_PRINT(INFO_DBG,"--f_close failed\r\n");
 		}
 	}
 }
@@ -55,7 +55,7 @@ uint8_t save_data(uint8_t *data, uint32_t data_len, uint16_t block_number)
 	str = data;
 	str += data_len;
 	*str = 0x0;
-	PRINTF("\r\n++Data #%d-%lu:\r\n%s\r\n", block_number, data_len, data);
+	DBG_PRINT(INFO_DBG,"\r\n++Data #%d-%lu:\r\n%s\r\n", block_number, data_len, data);
 #endif
 	//Calculate received data size
 	g_tftp_save_data += data_len;
@@ -65,7 +65,7 @@ uint8_t save_data(uint8_t *data, uint32_t data_len, uint16_t block_number)
 		uint16_t _blocklen;
 		tftp_fr = 	f_write(&tftp_fil, data, (UINT)data_len, &_blocklen);
 		if(tftp_fr != FR_OK){
-			PRINTF("--f_write failed #2\r\n");
+			DBG_PRINT(INFO_DBG,"--f_write failed #2\r\n");
 			save_data_result = 2;
 		}
 		else
@@ -75,7 +75,7 @@ uint8_t save_data(uint8_t *data, uint32_t data_len, uint16_t block_number)
 	}
 	else
 	{
-		PRINTF("--f_write failed #1\r\n");
+		DBG_PRINT(INFO_DBG,"--f_write failed #1\r\n");
 		save_data_result = 1;
 	}
 	return save_data_result;
@@ -120,7 +120,7 @@ static void set_filename(uint8_t *file, uint32_t file_size)
 	//Rewrite file onto SD-card
 	tftp_fr = f_open(&tftp_fil, (const char *)g_filename, FA_CREATE_ALWAYS | FA_WRITE);
 	if(tftp_fr != FR_OK){
-		PRINTF("--f_open failed\r\n");
+		DBG_PRINT(INFO_DBG,"--f_open failed\r\n");
 	}
 #endif
 }

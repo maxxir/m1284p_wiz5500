@@ -39,7 +39,7 @@ static FATFS Fatfs;		//File system object for each logical drive. >= 2
 #define PRINTF(...)
 #endif
 
-#define IP_WORK
+//#define IP_WORK
 
 //SPI CLOCK 4 or 8Mhz
 #define SPI_4_MHZ

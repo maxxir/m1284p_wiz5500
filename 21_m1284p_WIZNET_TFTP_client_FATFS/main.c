@@ -15,11 +15,13 @@
  * OK(v1.4) 4. Print out "test.txt" contents head (from SD-Card ) in a serial terminal.
  * OK(v1.5) 5. Add handlers for CHK_RAM_LEAKAGE && CHK_UPTIME.
  * 6. Add FSM for TFTP client in main loop
- * 7. All my debug code in tftp.c replace PRINTF(..) to DBG_PRINT(INFO_DBG, ..)
- * 8.?? Clear the code from the loopback sockets (Is it really need to do?)
+ * OK(v1.6) 7. All my debug code in tftp.c replace PRINTF(..) to DBG_PRINT(INFO_DBG, ..)
  *
  * Remark:
  * Checked with PC tftp-server (WIN7) - tftpd64.exe
+ *
+ * Author of unofficial porting to AVR Mega1284p/644p + W5500 Ethernet NIC (Wiznet sockets library using without Arduino):
+ * Ibragimov Maxim aka maxxir, Russia Togliatty  31.03.2019
  */
 
 #include <avr/io.h>
@@ -65,7 +67,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.5 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 29/03/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.6 Static IP TFTP Client && FATFS SDCARD WIZNET_5500 ETHERNET 31/03/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -434,63 +436,8 @@ void fatfs_init(void)
 	}
 }
 
-// Blocking (~3.5sec) receive one symbol from uart
-/*
-char uart0_receive(void)
-{
-	unsigned int c;
-	uint32_t wait_start = millis();
-	do
-	{
-		wdt_reset();
-		c = uart_getc();
-		if (( c & UART_NO_DATA ) == 0)
-		{
-		   uart_putc( (unsigned char)c );
-		   return (char)c ;
-		}
-		//After 3.5  sec waiting return with no symbol
-		if((millis()-wait_start) > 3500)
-		{
-			return 0;
-		}
-	}
-	while(( c & UART_NO_DATA ));
-	return 0;
-}
-*/
-
 
 //****************************FAT FS initialize: END
-
-/*
-void spi_speed_tst(void)
-{
-	// Here on SPI pins: MOSI 400Khz freq out, on SCLK 3.2MhzOUT
-	while(1)
-	{
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-	}
-}
-*/
 
 int main()
 {
@@ -557,13 +504,14 @@ int main()
 					//!! Здесь по факту нажатия кнопки (1->0 SW1)
 
 
-					printf("\r\n########## SW1 was pressed.\r\n");
+					PRINTF("\r\n########## SW1 was pressed.\r\n");
 					memset(tftp_filename, 0x0, TFTP_FILE_NAME_SIZE);
 					//!!Don't forget about 8.3 file name rule!!
-					strncpy(tftp_filename, "test.txt", TFTP_FILE_NAME_SIZE);
-					//strncpy(tftp_filename, "README.md", TFTP_FILE_NAME_SIZE);
-					//strncpy(tftp_filename, "tftpd32.ini", TFTP_FILE_NAME_SIZE);
-					//strncpy(tftp_filename, "ff_lfn.txt", TFTP_FILE_NAME_SIZE);
+					strncpy(tftp_filename, "test.txt", TFTP_FILE_NAME_SIZE); //pattern#1 test
+					//strncpy(tftp_filename, "README.md", TFTP_FILE_NAME_SIZE);//pattern#2 test
+					//strncpy(tftp_filename, "tftpd32.ini", TFTP_FILE_NAME_SIZE);//pattern#3 test
+					//strncpy(tftp_filename, "ff_lfn.txt", TFTP_FILE_NAME_SIZE);//pattern#4 test
+					strncpy(tftp_filename, "dir.txt", TFTP_FILE_NAME_SIZE);//pattern#5 test
 
 					tftp_server = ((uint32_t)tftp_destip[0] << 24) | ((uint32_t)tftp_destip[1] << 16) | ((uint32_t)tftp_destip[2] << 8) | ((uint32_t)tftp_destip[3]);
 
