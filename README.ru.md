@@ -33,7 +33,7 @@
 8. [HTTPD Веб-сервер со всем содержимымым в AVR FLASH-памяти (используются AJAX запросы)](../master/11_m1284p_WIZNET_HTTPServer_FLASH_pages/)
 9. [HTTPD Веб-сервер со всем содержимымым на SD-карте (Chang FAT FS библиотека) (AJAX запросы)](../master/12_m1284p_WIZNET_HTTPServer_SDCARD_pages/)
 10. [FTP-клиент (работает только в активном режиме) c сохранением контента на SD-карте ( диалог FTPC посредством последовательно терминала например: Terminal v1.9b by Bray, putty и тд.)](../master/14_m1284p_WIZNET_FTPC_FATFS/)
-11. [FTP-сервер (работает в обоих режимах активный/пассивный) c сохранением контента на SD-карте, проверена работа с FTP клиентами: Windows 7 cmd - т.е ftp, Total Сommander (в нем надо добавить небольшой паттерн на выборку), WinSCP.](../master/15_m1284p_WIZNET_FTPD_FATFS/)
+11. [FTP-сервер (работает в обоих режимах активный/пассивный) c сохранением контента на SD-карте, проверена работа с FTP клиентами: Windows 7 cmd - т.е ftp, FAR, Total Сommander (в нем надо добавить небольшой паттерн на выборку), WinSCP.](../master/15_m1284p_WIZNET_FTPD_FATFS/)
 12. [HTTPD + FTPD для динамической загрузки страниц Веб-сервера, весь контент на SD-карте (Chang FAT FS библиотека) (AJAX запросы)](../master/16_m1284p_WIZNET_HTTPD_FTPD_FATFS_SDCARD/)
 13. ZEVERO SD PetitFS бутлоадер (для двух процессоров): [M1284p](../master/bootloader_zevero_sd_m1284p_make/)/[M644p](../master/bootloader_zevero_sd_m644p_make/)
 14. C обновлением через бутлоадер: Wiznet Loopback TCP/UDP Static IP + FTP-сервер (для обновления программы через FTP-клиент) + SD-бутлоадер ZEVERO, (для двух процессоров): [M644p](../master/18_m644p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)/[M1284p](../master/18_m1284p_BTLD_WIZNET_LOOPBACK_FTPD_FATFS_SDCARD/)
