@@ -14,6 +14,9 @@
 #include "uart_extd.h"
 #include "spi.h"
 
+#include "globals.h" //Global definitions for project
+
+#include "stdbool.h"
 #include "Ethernet/socket.h"
 #include "Ethernet/wizchip_conf.h"
 #include "Internet/DHCP/dhcp.h"
@@ -46,28 +49,6 @@ void get_mcusr(void)
  * https://www.hw-group.com/software/hercules-setup-utility
  *
  */
-#define PRINTF_EN 1
-#if PRINTF_EN
-#define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
-#else
-#define PRINTF(...)
-#endif
-
-/*
- * m1284p minimum template, with one button & one led
- */
-
-//M644P/M1284p Users LEDS:
-//LED1/PORTC.4- m644p/m1284p maxxir
-#define led1_conf()      DDRC |= (1<<DDC4)
-#define led1_high()      PORTC |= (1<<PORTC4)
-#define led1_low()       PORTC &= ~(1<<PORTC4)
-#define led1_tgl()     PORTC ^= (1<<PORTC4)
-#define led1_read()     (PORTC & (1<<PORTC4))
-
-#define sw1_conf()      {DDRC &= ~(1<<DDC5); PORTC |= (1<<PORTC5);}
-#define sw1_read()     (PINC & (1<<PINC5))
-
 //*********Global vars
 #define TICK_PER_SEC 1000UL
 volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
@@ -99,13 +80,12 @@ const char PROGMEM str_mcu[] = "Unknown CPU"; //CPU is unknown
 //FUNC headers
 static void avr_init(void);
 void timer0_init(void);
-static inline unsigned long millis(void);
 
 //Wiznet FUNC headers
 void print_network_information(void);
 
 // RAM Memory usage test
-static int freeRam (void)
+int freeRam (void)
 {
 	extern int __heap_start, *__brkval;
 	int v;
@@ -126,7 +106,7 @@ ISR (TIMER0_COMPA_vect)
 	// LED_TGL;
 }
 
-static inline unsigned long millis(void)
+inline unsigned long millis(void)
 {
 	unsigned long i;
 	cli();
@@ -144,9 +124,9 @@ static inline unsigned long millis(void)
 //#define F_CPU 16000000UL
 //#endif
 
-/* 19200 baud */
-#define UART_BAUD_RATE      19200
+//#define UART_BAUD_RATE      19200
 //#define UART_BAUD_RATE      38400
+#define UART_BAUD_RATE      115200
 
 static int uart0_putchar(char ch,FILE *stream);
 static void uart0_rx_flash(void);
@@ -227,27 +207,7 @@ uint16_t adc_read(uint8_t channel)
 #define PORT_TCPS		5000
 #define PORT_UDPS       3000
 
-//#define IP_WORK
-
-#ifdef IP_WORK
-//NIC metrics for WORK PC
-wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
-		.ip   = {192, 168, 0, 199},         // IP address
-		.sn   = {255, 255, 255, 0},         // Subnet mask
-		.dns =  {8,8,8,8},			  // DNS address (google dns)
-		.gw   = {192, 168, 0, 1}, // Gateway address
-		.dhcp = NETINFO_DHCP};    //Dynamic IP configuration from a DHCP sever
-#else
-//NIC metrics for another PC (second IP configuration)
-wiz_NetInfo netInfo = { .mac  = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef}, // Mac address
-		.ip   = {192, 168, 1, 199},         // IP address
-		.sn   = {255, 255, 255, 0},         // Subnet mask
-		.dns =  {8,8,8,8},			  // DNS address (google dns)
-		.gw   = {192, 168, 1, 1}, // Gateway address
-		.dhcp = NETINFO_DHCP};    //Dynamic IP configuration from a DHCP sever
-#endif
-
-#define ETH_MAX_BUF_SIZE	2048
+#define ETH_MAX_BUF_SIZE	LOOPBACK_DATA_BUF_SIZE
 
 unsigned char ethBuf0[ETH_MAX_BUF_SIZE];
 unsigned char ethBuf1[ETH_MAX_BUF_SIZE];
@@ -414,6 +374,7 @@ int main()
 	uint32_t timer_link_1sec = millis();
 	uint32_t timer_dhcp_1sec = millis();
 	uint32_t timer_dhcp_1sec_count = 0;
+	uint32_t timer_uptime_60sec = millis();
 	while(1)
 	{
 		//Here at least every 1sec
@@ -515,6 +476,22 @@ int main()
 			//loopback_ret = loopback_tcpc(SOCK_TCPS, gDATABUF, destip, destport);
 			//if(loopback_ret < 0) printf("loopback ret: %ld\r\n", loopback_ret); // TCP Socket Error code
 		}
+
+		if((millis()-timer_uptime_60sec)> 60000)
+		{
+			//here every 60 sec
+			timer_uptime_60sec = millis();
+#ifdef CHK_RAM_LEAKAGE
+			//Printout RAM usage every 1 minute
+   			PRINTF(">> Free RAM is: %d bytes\r\n", freeRam());
+#endif
+
+#ifdef CHK_UPTIME
+			//Printout RAM usage every 1 minute
+   			PRINTF(">> Uptime %lu sec\r\n", millis()/1000);
+#endif
+		}
+
 	}
 	return 0;
 }
@@ -594,10 +571,10 @@ void print_network_information(void)
 		PRINTF("STATIC IP\r\n");
 	else
 		PRINTF("DHCP IP\r\n");
-	printf("Mac address: %02x:%02x:%02x:%02x:%02x:%02x\n\r",gWIZNETINFO.mac[0],gWIZNETINFO.mac[1],gWIZNETINFO.mac[2],gWIZNETINFO.mac[3],gWIZNETINFO.mac[4],gWIZNETINFO.mac[5]);
-	printf("IP address : %d.%d.%d.%d\n\r",gWIZNETINFO.ip[0],gWIZNETINFO.ip[1],gWIZNETINFO.ip[2],gWIZNETINFO.ip[3]);
-	printf("SM Mask	   : %d.%d.%d.%d\n\r",gWIZNETINFO.sn[0],gWIZNETINFO.sn[1],gWIZNETINFO.sn[2],gWIZNETINFO.sn[3]);
-	printf("Gate way   : %d.%d.%d.%d\n\r",gWIZNETINFO.gw[0],gWIZNETINFO.gw[1],gWIZNETINFO.gw[2],gWIZNETINFO.gw[3]);
-	printf("DNS Server : %d.%d.%d.%d\n\r",gWIZNETINFO.dns[0],gWIZNETINFO.dns[1],gWIZNETINFO.dns[2],gWIZNETINFO.dns[3]);
+	PRINTF("Mac address: %02x:%02x:%02x:%02x:%02x:%02x\n\r",gWIZNETINFO.mac[0],gWIZNETINFO.mac[1],gWIZNETINFO.mac[2],gWIZNETINFO.mac[3],gWIZNETINFO.mac[4],gWIZNETINFO.mac[5]);
+	PRINTF("IP address : %d.%d.%d.%d\n\r",gWIZNETINFO.ip[0],gWIZNETINFO.ip[1],gWIZNETINFO.ip[2],gWIZNETINFO.ip[3]);
+	PRINTF("SM Mask	   : %d.%d.%d.%d\n\r",gWIZNETINFO.sn[0],gWIZNETINFO.sn[1],gWIZNETINFO.sn[2],gWIZNETINFO.sn[3]);
+	PRINTF("Gate way   : %d.%d.%d.%d\n\r",gWIZNETINFO.gw[0],gWIZNETINFO.gw[1],gWIZNETINFO.gw[2],gWIZNETINFO.gw[3]);
+	PRINTF("DNS Server : %d.%d.%d.%d\n\r",gWIZNETINFO.dns[0],gWIZNETINFO.dns[1],gWIZNETINFO.dns[2],gWIZNETINFO.dns[3]);
 }
 
