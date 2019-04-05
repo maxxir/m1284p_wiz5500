@@ -6,13 +6,15 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stdio.h>
+#include "../../globals.h"
 
 /* Loopback test debug message printout enable */
 #define	_LOOPBACK_DEBUG_
 
 /* DATA_BUF_SIZE define for Loopback example */
-#ifndef DATA_BUF_SIZE
-	#define DATA_BUF_SIZE			2048
+#ifndef LOOPBACK_DATA_BUF_SIZE
+	#define LOOPBACK_DATA_BUF_SIZE			512
 #endif
 
 /************************/

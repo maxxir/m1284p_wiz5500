@@ -210,7 +210,7 @@ uint16_t adc_read(uint8_t channel)
 #define PORT_TCPS		5000
 #define PORT_UDPS       3000
 
-#define ETH_MAX_BUF_SIZE	2048
+#define ETH_MAX_BUF_SIZE	LOOPBACK_DATA_BUF_SIZE
 
 unsigned char ethBuf0[ETH_MAX_BUF_SIZE];
 unsigned char ethBuf1[ETH_MAX_BUF_SIZE];
@@ -329,6 +329,7 @@ int main()
 	/* Loopback Test: TCP Server and UDP */
 	// Test for Ethernet data transfer validation
 	uint32_t timer_link_1sec = millis();
+	uint32_t timer_uptime_60sec = millis();
 	while(1)
 	{
 		//Here at least every 1sec
@@ -358,6 +359,20 @@ int main()
 			}
 		}
 
+		if((millis()-timer_uptime_60sec)> 60000)
+		{
+			//here every 60 sec
+			timer_uptime_60sec = millis();
+#ifdef CHK_RAM_LEAKAGE
+			//Printout RAM usage every 1 minute
+   			PRINTF(">> Free RAM is: %d bytes\r\n", freeRam());
+#endif
+
+#ifdef CHK_UPTIME
+			//Printout RAM usage every 1 minute
+   			PRINTF(">> Uptime %lu sec\r\n", millis()/1000);
+#endif
+		}
 	}
 	return 0;
 }

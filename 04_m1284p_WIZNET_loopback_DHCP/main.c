@@ -298,8 +298,8 @@ void my_ip_assign(void)
 //   Display_Net_Conf();
 	print_network_information();
 #if 1
-   printf("DHCP LEASED TIME : %ld Sec.\r\n", getDHCPLeasetime());
-   printf("\r\n");
+   PRINTF("DHCP LEASED TIME : %ld Sec.\r\n", getDHCPLeasetime());
+   PRINTF("\r\n");
 #endif
 }
 
@@ -395,6 +395,7 @@ int main()
 				//Every 1min print-out DHCP leased time elapse
 #ifdef _DHCP_LEASED_TIME_DEBUG_
 			   PRINTF("DHCP LEASED TIME elapse: %lu Sec.\r\n", timer_dhcp_1sec_count );
+			   PRINTF("DHCP LEASED TIME : %ld Sec.\r\n", getDHCPLeasetime());
 #endif
 			}
 		}
