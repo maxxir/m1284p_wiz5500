@@ -41,7 +41,7 @@ static FATFS Fatfs;		//File system object for each logical drive. >= 2
 #define PRINTF(...)
 #endif
 
-#define IP_WORK
+//#define IP_WORK
 
 //SPI CLOCK 4 or 8Mhz
 #define SPI_4_MHZ
@@ -70,5 +70,6 @@ extern wiz_NetInfo netInfo;
 
 #define CHK_RAM_LEAKAGE
 #define CHK_UPTIME
+//#define _DHCP_LEASED_TIME_DEBUG_
 
 #endif /* GLOBALS_H_ */
