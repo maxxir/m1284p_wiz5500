@@ -41,6 +41,8 @@ static FATFS Fatfs;		//File system object for each logical drive. >= 2
 #define PRINTF(...)
 #endif
 
+#define SPRINTF(__S, FORMAT, args...) sprintf_P(__S, PSTR(FORMAT),##args)
+
 #define IP_WORK
 
 //SPI CLOCK 4 or 8Mhz
@@ -67,6 +69,7 @@ extern const char compile_time[] PROGMEM;
 extern const char str_prog_name[] PROGMEM;
 
 extern wiz_NetInfo netInfo;
+extern uint8_t MQTT_targetIP[4];
 
 #define CHK_RAM_LEAKAGE
 #define CHK_UPTIME

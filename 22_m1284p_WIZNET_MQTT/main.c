@@ -21,12 +21,15 @@
 #include "Ethernet/wizchip_conf.h"
 #include "Application/loopback/loopback.h"
 
+#include "Internet/MQTT/mqtt_interface.h"
+#include "Internet/MQTT/MQTTClient.h"
+
 #define _MAIN_DEBUG_
 
 /*
  * 22. MQTT + Mosquitto in LAN test
  *
- * Used code from:
+ * Used as base code from:
  * Nadyrshin Ruslan - MQTTPacket (MQTT client/server v3.1.1 adapted for AVR MCU).
  * YouTube-channel: https://www.youtube.com/channel/UChButpZaL5kUUl_zTyIDFkQ
  *
@@ -56,7 +59,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.0alpha Static IP MQTT && Loop-back WIZNET_5500 ETHERNET 05/04/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.1 Static IP MQTT && Loop-back WIZNET_5500 ETHERNET 06/04/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -76,6 +79,37 @@ const char PROGMEM str_mcu[] = "ATmega1284p"; //CPU is m1284p
 const char PROGMEM str_mcu[] = "Unknown CPU"; //CPU is unknown
 #endif
 
+//******************* MQTT: BEGIN
+#define SOCK_MQTT       2
+// Receive Buffer
+#define MQTT_BUFFER_SIZE	512     // 2048
+uint8_t mqtt_readBuffer[MQTT_BUFFER_SIZE];
+volatile uint16_t mes_id;
+
+
+//MQTT subscribe call-back is here
+void messageArrived(MessageData* md)
+{
+	char _topic_name[64] = "\0";
+	char _message[128] = "\0";
+
+	MQTTMessage* message = md->message;
+	MQTTString* topic = md->topicName;
+	strncpy(_topic_name, topic->lenstring.data, topic->lenstring.len);
+	strncpy(_message, message->payload, message->payloadlen);
+	PRINTF("<<MQTT Sub: [%s] %s", _topic_name , _message);
+
+	//md->topicName->
+	/*
+	  for (uint8_t i = 0; i < md->topicName->lenstring.len; i++)
+		putchar(*(md->topicName->lenstring.data + i));
+
+	  printf(" (%.*s)\r\n", (int32_t)message->payloadlen, (char*)message->payload);
+	 */
+}
+
+
+//******************* MQTT: END
 
 //FUNC headers
 static void avr_init(void);
@@ -263,35 +297,6 @@ void IO_LIBRARY_Init(void) {
 }
 //***************** WIZCHIP INIT: END
 
-/*
-void spi_speed_tst(void)
-{
-	// Here on SPI pins: MOSI 400Khz freq out, on SCLK 3.2MhzOUT
-	while(1)
-	{
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-		SPI_WRITE(0xF0);
-	}
-}
-*/
-
 int main()
 {
 	//uint8_t prev_sw1 = 1; // VAR for sw1 pressing detect
@@ -324,11 +329,52 @@ int main()
 		wdt_reset();
 	}
 
+//****************MQTT client initialize
+	//Find MQTT broker and connect with it
+	uint8_t mqtt_buf[100];
+	int32_t mqtt_rc = 0;
+	Network mqtt_network;
+	Client mqtt_client;
+	mqtt_network.my_socket = SOCK_MQTT;
 
-	/* Loopback Test: TCP Server and UDP */
-	// Test for Ethernet data transfer validation
+	// Можно определить IP узла по DNS-имени, IP узла будет в массиве targetIP
+	//DNS_init(1, tempBuffer);
+	//DNS_run(gWIZNETINFO.dns, "test.mosquitto.org", targetIP);
+
+	PRINTF(">>Trying connect to MQTT broker: %d.%d.%d.%d ..\r\n", MQTT_targetIP[0], MQTT_targetIP[1], MQTT_targetIP[2], MQTT_targetIP[3]);
+	NewNetwork(&mqtt_network);
+	ConnectNetwork(&mqtt_network, MQTT_targetIP, 1883);
+	MQTTClient(&mqtt_client, &mqtt_network, 1000, mqtt_buf, 100, mqtt_readBuffer, MQTT_BUFFER_SIZE);
+
+	//Connection to MQTT broker
+	MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
+	data.willFlag = 0;
+	data.MQTTVersion = 4;//3;
+	data.clientID.cstring = (char*)"w5500_avr_client";
+	data.username.cstring = (char*)"user1234";
+	data.password.cstring = (char*)"\0";
+	data.keepAliveInterval = 60;
+	data.cleansession = 1;
+	mqtt_rc = MQTTConnect(&mqtt_client, &data);
+	if (mqtt_rc == SUCCESSS)
+	{
+		PRINTF("++MQTT Connected SUCCESS: %ld\r\n", mqtt_rc);
+	}
+	else
+	{
+		PRINTF("--MQTT Connected ERROR: %ld\r\n", mqtt_rc);
+		while(1);//Reboot the board
+	}
+
+	// Subscribe to all topics
+	char SubString[] = "/#";
+	mqtt_rc = MQTTSubscribe(&mqtt_client, SubString, QOS0, messageArrived);
+	PRINTF("Subscribed (%s) %d\r\n", SubString, mqtt_rc);
+
+
 	uint32_t timer_link_1sec = millis();
 	uint32_t timer_uptime_60sec = millis();
+	uint32_t timer_mqtt_pub_10sec = millis();
 	while(1)
 	{
 		//Here at least every 1sec
@@ -337,12 +383,36 @@ int main()
 		//Use Hercules Terminal to check loopback tcp:5000 and udp:3000
 		/*
 		 * https://www.hw-group.com/software/hercules-setup-utility
-		 * */
+		 *
+		 */
 		loopback_tcps(SOCK_TCPS,ethBuf0,PORT_TCPS);
 		loopback_udps(SOCK_UDPS,ethBuf0,PORT_UDPS);
 
-		//loopback_ret = loopback_tcpc(SOCK_TCPS, gDATABUF, destip, destport);
-		//if(loopback_ret < 0) printf("loopback ret: %ld\r\n", loopback_ret); // TCP Socket Error code
+		// MQTT pub event every 10 sec
+		if((millis()-timer_mqtt_pub_10sec)> 10000)
+		{
+			static uint32_t mqtt_pub_count = 0;
+			//here every 10 sec
+			timer_mqtt_pub_10sec = millis();
+
+			char _msg[64];
+			//Every 10sec push message: "Uptime: xxx sec; Free RAM: xxxxx bytes", to BLYNK server (widget Terminal)
+			int len = SPRINTF(_msg, "Uptime: %lu sec; Free RAM: %d bytes\r\n", millis()/1000, freeRam());
+			if(len > 0)
+			{
+				PRINTF(">>MQTT pub msg №%lu\r\n", ++mqtt_pub_count);
+				MQTTMessage pubMessage;
+				pubMessage.qos = QOS0;
+				pubMessage.id = mes_id++;
+				pubMessage.payloadlen = (size_t)len;
+				pubMessage.payload = _msg;
+				MQTTPublish(&mqtt_client, "/w5500_avr_dbg", &pubMessage);
+			}
+		}
+
+	    // MQTT broker connection and sub receive
+	    MQTTYield(&mqtt_client, 100);//~100msec blocking here
+
 
 		if((millis()-timer_link_1sec)> 1000)
 		{
