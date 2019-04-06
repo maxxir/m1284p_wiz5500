@@ -335,6 +335,7 @@ int main()
 	int32_t mqtt_rc = 0;
 	Network mqtt_network;
 	Client mqtt_client;
+	uint8_t mqtt_err_cnt = 0;
 	mqtt_network.my_socket = SOCK_MQTT;
 
 	// Можно определить IP узла по DNS-имени, IP узла будет в массиве targetIP
@@ -400,13 +401,29 @@ int main()
 			int len = SPRINTF(_msg, "Uptime: %lu sec; Free RAM: %d bytes\r\n", millis()/1000, freeRam());
 			if(len > 0)
 			{
-				PRINTF(">>MQTT pub msg №%lu\r\n", ++mqtt_pub_count);
+				PRINTF(">>MQTT pub msg №%lu ", ++mqtt_pub_count);
 				MQTTMessage pubMessage;
 				pubMessage.qos = QOS0;
 				pubMessage.id = mes_id++;
 				pubMessage.payloadlen = (size_t)len;
 				pubMessage.payload = _msg;
-				MQTTPublish(&mqtt_client, "/w5500_avr_dbg", &pubMessage);
+				mqtt_rc = MQTTPublish(&mqtt_client, "/w5500_avr_dbg", &pubMessage);
+				//Analize MQTT publish result (for MQTT failover mode)
+				if (mqtt_rc == SUCCESSS)
+				{
+					mqtt_err_cnt  = 0;
+					PRINTF(" - OK\r\n");
+				}
+				else
+				{
+					PRINTF(" - ERROR\r\n");
+					//Reboot device after 5 continuous errors (~ 1min here)
+					if(mqtt_err_cnt++ > 5)
+					{
+						PRINTF("Connection with MQTT Broker was lost!!\r\nReboot the board..\r\n");
+						while(1);
+					}
+				}
 			}
 		}
 
