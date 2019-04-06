@@ -41,6 +41,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 16. [IOT Blynk client Example with Blynk smartphone application (checked only Android side) - NO Arduino CODE, used Wiznet Sockets](../master/19_m1284p_WIZNET_blynk/)
 17. [Bootloaded code: IOT BLYNK client combined with FTPD server (for bootloading via FTP client)+ SD-bootloader ZEVERO, working on M1284p only](../master/20_m1284p_BTLD_WIZNET_BLYNK_FTPD_FATFS_SDCARD/)
 18. [TFTP client](../master/21_m1284p_WIZNET_TFTP_client_FATFS/)
+19. [MQTT client](../master/22_m1284p_WIZNET_MQTT/)
 
 #### Blynk application screenshot:
 
@@ -50,7 +51,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 
 ## What TODO:
 
-19. MQTT client
+All done.
 
 ## Remarks:
 * [m1284P schematic](../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_schematic.png/)
