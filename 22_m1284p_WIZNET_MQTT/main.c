@@ -11,6 +11,7 @@
 #include <compat/deprecated.h>  //sbi, cbi etc..
 #include "avr/wdt.h" // WatchDog
 #include <stdio.h>  // printf etc..
+#include "string.h"
 #include "uart_extd.h"
 #include "spi.h"
 
@@ -29,12 +30,21 @@
 /*
  * 22. MQTT + Mosquitto in LAN test
  *
+ * Briefly:
+ * 1. Pub every 1 sec Analog && Digital values only:
+ * sta/analog/0  - A6/PA6
+ * sta/digital/0 - SW1/PC5
+ * 2. Pub every 10 sec Uptime && FreeRAM device statistic:
+ * /w5500_avr_dbg - Uptime: xxxx sec; Free RAM: xxxx bytes
+ * 3. Sub: Print out all received messages
+ * 4. On lost connection with MQTT broker reboot device after ~ 20 sec.
+ *
  * Used as base code from:
  * Nadyrshin Ruslan - MQTTPacket (MQTT client/server v3.1.1 adapted for AVR MCU).
  * YouTube-channel: https://www.youtube.com/channel/UChButpZaL5kUUl_zTyIDFkQ
  *
  * Author of unofficial porting to AVR Mega1284p/644p + W5500 Ethernet NIC (Wiznet sockets library using without Arduino):
- * Ibragimov Maxim aka maxxir, Russia Togliatty  05.04.2019
+ * Ibragimov Maxim aka maxxir, Russia Togliatty  07.04.2019
  */
 
 //***********Prologue for fast WDT disable & and save reason of reset/power-up: BEGIN
@@ -59,7 +69,7 @@ volatile unsigned long _millis; // for millis tick !! Overflow every ~49.7 days
 //*********Program metrics
 const char compile_date[] PROGMEM    = __DATE__;     // Mmm dd yyyy - Дата компиляции
 const char compile_time[] PROGMEM    = __TIME__;     // hh:mm:ss - Время компиляции
-const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.1 Static IP MQTT && Loop-back WIZNET_5500 ETHERNET 06/04/2019\r\n"; // Program name
+const char str_prog_name[] PROGMEM   = "\r\nAtMega1284p v1.2 Static IP MQTT && Loop-back WIZNET_5500 ETHERNET 07/04/2019\r\n"; // Program name
 
 #if defined(__AVR_ATmega128__)
 const char PROGMEM str_mcu[] = "ATmega128"; //CPU is m128
@@ -86,6 +96,9 @@ const char PROGMEM str_mcu[] = "Unknown CPU"; //CPU is unknown
 uint8_t mqtt_readBuffer[MQTT_BUFFER_SIZE];
 volatile uint16_t mes_id;
 
+#define PUBLISH_ANALOG_0         "sta/analog/0"
+#define PUBLISH_DIGITAL_0         "sta/digital/0"
+#define PUBLISH_AVR_DEBUG         "/w5500_avr_dbg"
 
 //MQTT subscribe call-back is here
 void messageArrived(MessageData* md)
@@ -108,7 +121,38 @@ void messageArrived(MessageData* md)
 	 */
 }
 
+void mqtt_pub(Client* mqtt_client, char * mqtt_topic, char * mqtt_msg, int mqtt_msg_len)
+{
+	static uint32_t mqtt_pub_count = 0;
+	static uint8_t mqtt_err_cnt = 0;
+	int32_t mqtt_rc;
 
+	wdt_reset();
+
+	PRINTF(">>MQTT pub msg №%lu ", ++mqtt_pub_count);
+	MQTTMessage pubMessage;
+	pubMessage.qos = QOS0;
+	pubMessage.id = mes_id++;
+	pubMessage.payloadlen = (size_t)mqtt_msg_len;
+	pubMessage.payload = mqtt_msg;
+	mqtt_rc = MQTTPublish(mqtt_client, mqtt_topic , &pubMessage);
+	//Analize MQTT publish result (for MQTT failover mode)
+	if (mqtt_rc == SUCCESSS)
+	{
+		mqtt_err_cnt  = 0;
+		PRINTF(" - OK\r\n");
+	}
+	else
+	{
+		PRINTF(" - ERROR\r\n");
+		//Reboot device after 20 continuous errors (~ 20sec)
+		if(mqtt_err_cnt++ > 20)
+		{
+			PRINTF("Connection with MQTT Broker was lost!!\r\nReboot the board..\r\n");
+			while(1);
+		}
+	}
+}
 //******************* MQTT: END
 
 //FUNC headers
@@ -335,7 +379,6 @@ int main()
 	int32_t mqtt_rc = 0;
 	Network mqtt_network;
 	Client mqtt_client;
-	uint8_t mqtt_err_cnt = 0;
 	mqtt_network.my_socket = SOCK_MQTT;
 
 	// Можно определить IP узла по DNS-имени, IP узла будет в массиве targetIP
@@ -375,7 +418,7 @@ int main()
 
 	uint32_t timer_link_1sec = millis();
 	uint32_t timer_uptime_60sec = millis();
-	uint32_t timer_mqtt_pub_10sec = millis();
+	uint32_t timer_mqtt_pub_1sec = millis();
 	while(1)
 	{
 		//Here at least every 1sec
@@ -389,42 +432,41 @@ int main()
 		loopback_tcps(SOCK_TCPS,ethBuf0,PORT_TCPS);
 		loopback_udps(SOCK_UDPS,ethBuf0,PORT_UDPS);
 
-		// MQTT pub event every 10 sec
-		if((millis()-timer_mqtt_pub_10sec)> 10000)
+		// MQTT pub event every 1 sec
+		if((millis()-timer_mqtt_pub_1sec)> 1000)
 		{
-			static uint32_t mqtt_pub_count = 0;
-			//here every 10 sec
-			timer_mqtt_pub_10sec = millis();
+			//here every 1 sec
+			timer_mqtt_pub_1sec = millis();
+			static uint8_t mqtt_10sec_cnt =0;
+			static char _msg[64] = "\0";
+			static int _len;
 
-			char _msg[64];
-			//Every 10sec push message: "Uptime: xxx sec; Free RAM: xxxxx bytes", to BLYNK server (widget Terminal)
-			int len = SPRINTF(_msg, "Uptime: %lu sec; Free RAM: %d bytes\r\n", millis()/1000, freeRam());
-			if(len > 0)
+			//Every 1sec send status POT A6 (ADC input)
+			_len = SPRINTF(_msg, "%u", adc_read(6));
+			if(_len > 0)
 			{
-				PRINTF(">>MQTT pub msg №%lu ", ++mqtt_pub_count);
-				MQTTMessage pubMessage;
-				pubMessage.qos = QOS0;
-				pubMessage.id = mes_id++;
-				pubMessage.payloadlen = (size_t)len;
-				pubMessage.payload = _msg;
-				mqtt_rc = MQTTPublish(&mqtt_client, "/w5500_avr_dbg", &pubMessage);
-				//Analize MQTT publish result (for MQTT failover mode)
-				if (mqtt_rc == SUCCESSS)
+				mqtt_pub(&mqtt_client, PUBLISH_ANALOG_0, _msg, _len);
+			}
+
+			// && SW1 (GPIO input)
+			uint16_t val = sw1_read()?0:!0;
+			_len = SPRINTF(_msg, "%u", val);
+			if(_len > 0)
+			{
+				mqtt_pub(&mqtt_client, PUBLISH_DIGITAL_0, _msg, _len);
+			}
+
+			//Every 10sec public message: "Uptime: xxx sec; Free RAM: xxxxx bytes" to "/w5500_avr_dbg"
+			if(++mqtt_10sec_cnt>9)
+			{
+				mqtt_10sec_cnt = 0;
+				_len = SPRINTF(_msg, "Uptime: %lu sec; Free RAM: %d bytes\r\n", millis()/1000, freeRam());
+				if(_len > 0)
 				{
-					mqtt_err_cnt  = 0;
-					PRINTF(" - OK\r\n");
-				}
-				else
-				{
-					PRINTF(" - ERROR\r\n");
-					//Reboot device after 5 continuous errors (~ 1min here)
-					if(mqtt_err_cnt++ > 5)
-					{
-						PRINTF("Connection with MQTT Broker was lost!!\r\nReboot the board..\r\n");
-						while(1);
-					}
+					mqtt_pub(&mqtt_client, PUBLISH_AVR_DEBUG, _msg, _len);
 				}
 			}
+
 		}
 
 	    // MQTT broker connection and sub receive
