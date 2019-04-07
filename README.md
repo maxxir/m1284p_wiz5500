@@ -21,7 +21,7 @@ Building in Eclipse Kepler with AVR-Eclipse plugin and avr-gcc 4.9.2 toolchain.
 <img src="../master/KiCad_M644_breakout_v1.2d/Pictures/tested_system_photo_01.jpg" alt="m1284p System photo" width="50%" height="50%">
 
 
-## Software part. What done ( In order of increasing complexity )
+## Software part. What done ( In order of increasing complexity and date of creation )
 
 1. [Wiznet Loopback TCP/UDP Static IP](../master/03_m1284p_WIZNET_loopback_STATIC_IP/)
 2. [Wiznet Loopback TCP/UDP DHCP IP](../master/04_m1284p_WIZNET_loopback_DHCP/)
