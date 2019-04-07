@@ -14,7 +14,7 @@
 
 #### Моя плата на m644p/m1284p (KiCad 3D render):
 
-<img src="../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d_top.png" alt="m1284p Board 3D Top" width="50%" height="50%">
+<img src="../master/KiCad_M644_breakout_v1.2d/Pictures/M644_breakout_v1.2d-a_top.png" alt="m1284p Board 3D Top" width="50%" height="50%">
 
 #### Фото тестовой системы:
 
