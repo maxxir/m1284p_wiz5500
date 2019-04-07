@@ -36,7 +36,7 @@
  * sta/digital/0 - SW1/PC5
  * 2. Pub every 10 sec Uptime && FreeRAM device statistic:
  * /w5500_avr_dbg - Uptime: xxxx sec; Free RAM: xxxx bytes
- * 3. Sub: Print out all received messages
+ * 3. Sub: Print out all received messages (Subscribe for all that begin from "/")
  * 4. On lost connection with MQTT broker reboot device after ~ 20 sec.
  *
  * Used as base code from:
@@ -411,7 +411,7 @@ int main()
 	}
 
 	// Subscribe to all topics
-	char SubString[] = "/#";
+	char SubString[] = "/#";// Subscribe for all that begin from "/"
 	mqtt_rc = MQTTSubscribe(&mqtt_client, SubString, QOS0, messageArrived);
 	PRINTF("Subscribed (%s) %d\r\n", SubString, mqtt_rc);
 
